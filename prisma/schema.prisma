@@ -1,0 +1,212 @@
+// Prisma Schema for Felles Formidlingsløsning
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================
+// INNHOLD (CMS)
+// ============================================
+
+model Anbefaling {
+  id          String   @id @default(cuid())
+  tittel      String
+  forfatter   String?
+  beskrivelse String   @db.Text
+  bildeUrl    String?
+  sjanger     String?
+  målgruppe   String?  // "Voksen", "Ungdom", "Barn"
+  publisert   Boolean  @default(false)
+  opprettet   DateTime @default(now())
+  oppdatert   DateTime @updatedAt
+
+  @@map("anbefalinger")
+}
+
+model Arrangement {
+  id            String   @id @default(cuid())
+  tittel        String
+  beskrivelse   String   @db.Text
+  dato          DateTime
+  klokkeslett   String   // "18:00"
+  varighet      Int?     // Minutter
+  sted          String   // "Hovedbiblioteket", "Laksevåg bibliotek", etc.
+  kategori      String   // "Forfattermøte", "Barn", "Kurs", etc.
+  bildeUrl      String?
+  kapasitet     Int      @default(50)
+  påmeldte      Int      @default(0)
+  påmeldingÅpen Boolean  @default(true)
+  publisert     Boolean  @default(false)
+  opprettet     DateTime @default(now())
+  oppdatert     DateTime @updatedAt
+
+  påmeldinger Påmelding[]
+
+  @@map("arrangementer")
+}
+
+model Artikkel {
+  id          String   @id @default(cuid())
+  tittel      String
+  ingress     String?  @db.Text
+  innhold     String   @db.Text
+  forfatter   String
+  bildeUrl    String?
+  kategori    String?  // "Nyheter", "Tips", "Anmeldelser"
+  publisert   Boolean  @default(false)
+  publisertDato DateTime?
+  opprettet   DateTime @default(now())
+  oppdatert   DateTime @updatedAt
+
+  @@map("artikler")
+}
+
+// ============================================
+// BRUKERE & AUTENTISERING
+// ============================================
+
+model Bruker {
+  id                    String   @id @default(cuid())
+  navn                  String
+  epost                 String   @unique
+  bibliotekkortnummer   String   @unique
+  passordHash           String?  // Null hvis SSO
+  telefon               String?
+  adresse               String?
+  postnummer            String?
+  poststed              String?
+  hjemmebibliotek       String?  // "Bergen Hovedbibliotek"
+  rolle                 String   @default("BRUKER") // "BRUKER", "ADMIN", "REDAKTØR"
+  aktiv                 Boolean  @default(true)
+  opprettet             DateTime @default(now())
+  oppdatert             DateTime @updatedAt
+
+  lån           Lån[]
+  reservasjoner Reservasjon[]
+  gebyrer       Gebyr[]
+  påmeldinger   Påmelding[]
+
+  @@map("brukere")
+}
+
+// ============================================
+// KATALOG & LÅN
+// ============================================
+
+model Bok {
+  id           String   @id @default(cuid())
+  tittel       String
+  forfatter    String
+  isbn         String?  @unique
+  utgivelsesår Int?
+  forlag       String?
+  sjanger      String
+  beskrivelse  String?  @db.Text
+  bildeUrl     String?
+  antallEks    Int      @default(1)
+  tilgjengelig Int      @default(1)
+  språk        String   @default("Norsk")
+  opprettet    DateTime @default(now())
+  oppdatert    DateTime @updatedAt
+
+  lån           Lån[]
+  reservasjoner Reservasjon[]
+
+  @@map("bøker")
+}
+
+model Lån {
+  id           String    @id @default(cuid())
+  brukerId     String
+  bokId        String
+  filial       String    // Hvor boken ble lånt
+  utlånt       DateTime  @default(now())
+  forfallsdato DateTime
+  innlevert    DateTime?
+  fornyet      Int       @default(0) // Antall ganger fornyet
+  
+  bruker Bruker @relation(fields: [brukerId], references: [id])
+  bok    Bok    @relation(fields: [bokId], references: [id])
+
+  @@map("lån")
+}
+
+model Reservasjon {
+  id           String   @id @default(cuid())
+  brukerId     String
+  bokId        String
+  filial       String   // Ønsket hentested
+  plassering   Int      // Plass i køen
+  reservert    DateTime @default(now())
+  utløper      DateTime
+  klar         Boolean  @default(false) // Klar til henting
+  
+  bruker Bruker @relation(fields: [brukerId], references: [id])
+  bok    Bok    @relation(fields: [bokId], references: [id])
+
+  @@map("reservasjoner")
+}
+
+model Gebyr {
+  id          String   @id @default(cuid())
+  brukerId    String
+  type        String   // "Forsinket", "Tapt bok", "Skadet", etc.
+  beskrivelse String
+  beløp       Float
+  betalt      Boolean  @default(false)
+  opprettet   DateTime @default(now())
+  
+  bruker Bruker @relation(fields: [brukerId], references: [id])
+
+  @@map("gebyrer")
+}
+
+// ============================================
+// ARRANGEMENTER (PÅMELDINGER)
+// ============================================
+
+model Påmelding {
+  id             String   @id @default(cuid())
+  brukerId       String
+  arrangementId  String
+  navn           String
+  epost          String
+  telefon        String?
+  antallPersoner Int      @default(1)
+  kommentar      String?  @db.Text
+  påmeldt        DateTime @default(now())
+  
+  bruker      Bruker      @relation(fields: [brukerId], references: [id])
+  arrangement Arrangement @relation(fields: [arrangementId], references: [id])
+
+  @@unique([brukerId, arrangementId])
+  @@map("påmeldinger")
+}
+
+// ============================================
+// FILIALER
+// ============================================
+
+model Filial {
+  id           String   @id @default(cuid())
+  navn         String   @unique
+  adresse      String
+  postnummer   String
+  poststed     String
+  telefon      String?
+  epost        String?
+  åpningstider String   @db.Text // JSON string med åpningstider
+  latitude     Float?
+  longitude    Float?
+  bildeUrl     String?
+  beskrivelse  String?  @db.Text
+  aktiv        Boolean  @default(true)
+  opprettet    DateTime @default(now())
+
+  @@map("filialer")
+}

@@ -1,18 +1,23 @@
 {
   "name": "felles-formidling",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "db:seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "next": "16.1.6",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "openai": "^4.78.0",
+    "@prisma/client": "^6.2.0",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-dropdown-menu": "^2.1.2",
     "@radix-ui/react-select": "^2.1.2",
@@ -23,7 +28,8 @@
     "date-fns": "^4.1.0",
     "lucide-react": "^0.468.0",
     "tailwind-merge": "^2.5.5",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@types/node": "^22",
@@ -33,7 +39,9 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "postcss": "^8.4.49",
+    "prisma": "^6.2.0",
     "tailwindcss": "^3.4.17",
+    "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   }
 }
