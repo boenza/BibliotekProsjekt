@@ -12,7 +12,7 @@ export default function HomePage() {
             Norges nye bibliotekplattform
           </p>
           
-          <div className="grid md:grid-cols-3 gap-6 mt-12">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
             <Link
               href="/admin"
               className="bg-[#16425b] hover:bg-[#1a5270] text-white font-semibold py-6 px-8 rounded-xl transition-all transform hover:scale-105 shadow-lg"
@@ -27,8 +27,17 @@ export default function HomePage() {
               className="bg-[#10b981] hover:bg-[#059669] text-white font-semibold py-6 px-8 rounded-xl transition-all transform hover:scale-105 shadow-lg"
             >
               <div className="text-2xl mb-2">📚</div>
-              <div className="text-lg">Brukersiden</div>
-              <div className="text-sm opacity-90 mt-2">Se bibliotekets tilbud</div>
+              <div className="text-lg">Katalog</div>
+              <div className="text-sm opacity-90 mt-2">Søk i samlingen</div>
+            </Link>
+
+            <Link
+              href="/digitalt"
+              className="bg-[#8b5cf6] hover:bg-[#7c3aed] text-white font-semibold py-6 px-8 rounded-xl transition-all transform hover:scale-105 shadow-lg"
+            >
+              <div className="text-2xl mb-2">🎬</div>
+              <div className="text-lg">Digitalt</div>
+              <div className="text-sm opacity-90 mt-2">E-bøker & streaming</div>
             </Link>
 
             <Link
