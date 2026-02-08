@@ -1,13 +1,151 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+
+interface Arrangement {
+  id: string
+  tittel: string
+  beskrivelse: string
+  dato: string
+  klokkeslett: string
+  sted: string
+  kategori: string
+  kapasitet: number
+  påmeldte: number
+  publisert: boolean
+  opprettet: string
+}
 
 export default function ArrangementerPage() {
   const [showNewForm, setShowNewForm] = useState(false)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [date, setDate] = useState('')
+  const [time, setTime] = useState('')
+  const [location, setLocation] = useState('Bergen Hovedbibliotek')
+  const [category, setCategory] = useState('Forfattermøte')
+  const [capacity, setCapacity] = useState(50)
   const [aiSuggestion, setAiSuggestion] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [arrangementer, setArrangementer] = useState<Arrangement[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
+
+  // Hent arrangementer fra database
+  useEffect(() => {
+    fetchArrangementer()
+  }, [])
+
+  const fetchArrangementer = async () => {
+    try {
+      const response = await fetch('/api/arrangementer')
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch arrangementer')
+      }
+      
+      const data = await response.json()
+      
+      if (Array.isArray(data)) {
+        setArrangementer(data)
+      } else {
+        console.error('Data is not an array:', data)
+        setArrangementer([])
+      }
+    } catch (error) {
+      console.error('Error fetching arrangementer:', error)
+      setArrangementer([])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleDuplicate = async (arrangement: Arrangement) => {
+    if (!confirm(`Vil du duplisere arrangementet "${arrangement.tittel}"?`)) {
+      return
+    }
+
+    try {
+      const response = await fetch('/api/arrangementer', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: arrangement.id,
+          action: 'duplicate'
+        })
+      })
+
+      if (response.ok) {
+        setToastMessage('Arrangement duplisert!')
+        setShowToast(true)
+        setTimeout(() => setShowToast(false), 3000)
+        
+        // Refresh list
+        await fetchArrangementer()
+      } else {
+        alert('Kunne ikke duplisere arrangement')
+      }
+    } catch (error) {
+      console.error('Error duplicating arrangement:', error)
+      alert('Feil ved duplisering')
+    }
+  }
+
+  const handlePublish = async (publisert: boolean) => {
+    if (!title || !description || !date || !time) {
+      alert('Tittel, beskrivelse, dato og klokkeslett er påkrevd!')
+      return
+    }
+
+    setIsSaving(true)
+
+    try {
+      const response = await fetch('/api/arrangementer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tittel: title,
+          beskrivelse: description,
+          dato: date,
+          klokkeslett: time,
+          sted: location,
+          kategori: category,
+          kapasitet: capacity,
+          publisert
+        }),
+      })
+
+      if (response.ok) {
+        // Reset form
+        setTitle('')
+        setDescription('')
+        setDate('')
+        setTime('')
+        setLocation('Bergen Hovedbibliotek')
+        setCategory('Forfattermøte')
+        setCapacity(50)
+        setAiSuggestion('')
+        setShowNewForm(false)
+        
+        // Refresh list
+        fetchArrangementer()
+        
+        // Show success message
+        setToastMessage(publisert ? 'Arrangement publisert!' : 'Arrangement lagret som kladd!')
+        setShowToast(true)
+        setTimeout(() => setShowToast(false), 3000)
+      } else {
+        alert('Kunne ikke lagre arrangement')
+      }
+    } catch (error) {
+      console.error('Error saving arrangement:', error)
+      alert('Noe gikk galt ved lagring')
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
   const handleAIAssist = async () => {
     if (!title) {
@@ -43,12 +181,6 @@ export default function ArrangementerPage() {
       setIsGenerating(false)
     }
   }
-  
-  const arrangementer = [
-    { id: 1, title: 'Forfattermøte: Jo Nesbø', date: '2026-02-12', time: '18:00', branch: 'Hovedbiblioteket', status: 'Publisert', spots: 120, registered: 98 },
-    { id: 2, title: 'Eventyrtime for de minste', date: '2026-02-08', time: '10:30', branch: 'Fana', status: 'Publisert', spots: 25, registered: 18 },
-    { id: 3, title: 'Kodeklubb for ungdom', date: '2026-02-10', time: '15:00', branch: 'Åsane', status: 'Kladd', spots: 20, registered: 0 },
-  ]
 
   return (
     <div className="space-y-6">
@@ -77,19 +209,10 @@ export default function ArrangementerPage() {
               </label>
               <input
                 type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#16425b] focus:border-transparent"
-                placeholder="F.eks. 'Forfattermøte med...'"
-              />
-            </div>
-
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Kort beskrivelse
-              </label>
-              <input
-                type="text"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#16425b] focus:border-transparent"
-                placeholder="Undertittel eller kort beskrivelse"
+                placeholder="F.eks. 'Forfattermøte med Jo Nesbø'"
               />
             </div>
 
@@ -97,8 +220,11 @@ export default function ArrangementerPage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Kategori *
               </label>
-              <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#16425b] focus:border-transparent">
-                <option>Velg kategori...</option>
+              <select 
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#16425b] focus:border-transparent"
+              >
                 <option>Forfattermøte</option>
                 <option>Barn</option>
                 <option>Ungdom</option>
@@ -112,14 +238,17 @@ export default function ArrangementerPage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Bibliotekfilial *
               </label>
-              <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#16425b] focus:border-transparent">
-                <option>Velg filial...</option>
-                <option>Hovedbiblioteket</option>
-                <option>Fana</option>
-                <option>Åsane</option>
-                <option>Loddefjord</option>
-                <option>Laksevåg</option>
-                <option>Fyllingsdalen</option>
+              <select 
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#16425b] focus:border-transparent"
+              >
+                <option>Bergen Hovedbibliotek</option>
+                <option>Laksevåg bibliotek</option>
+                <option>Fyllingsdalen bibliotek</option>
+                <option>Fana bibliotek</option>
+                <option>Åsane bibliotek</option>
+                <option>Loddefjord bibliotek</option>
               </select>
             </div>
 
@@ -129,29 +258,22 @@ export default function ArrangementerPage() {
               </label>
               <input
                 type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#16425b] focus:border-transparent"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Start *
-                </label>
-                <input
-                  type="time"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#16425b] focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Slutt *
-                </label>
-                <input
-                  type="time"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#16425b] focus:border-transparent"
-                />
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Klokkeslett *
+              </label>
+              <input
+                type="time"
+                value={time}
+                onChange={(e) => setTime(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#16425b] focus:border-transparent"
+              />
             </div>
 
             <div>
@@ -160,19 +282,10 @@ export default function ArrangementerPage() {
               </label>
               <input
                 type="number"
+                value={capacity}
+                onChange={(e) => setCapacity(parseInt(e.target.value) || 50)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#16425b] focus:border-transparent"
-                placeholder="La stå tom for drop-in"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Målgruppe
-              </label>
-              <input
-                type="text"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#16425b] focus:border-transparent"
-                placeholder="F.eks. 'Voksne', '0-5 år', 'Alle'"
+                placeholder="50"
               />
             </div>
 
@@ -259,10 +372,18 @@ export default function ArrangementerPage() {
           </div>
 
           <div className="flex items-center space-x-4 pt-6 border-t border-gray-200 mt-6">
-            <button className="px-8 py-3 bg-[#16425b] text-white rounded-lg hover:bg-[#1a5270] transition-colors font-medium">
-              Publiser
+            <button 
+              onClick={() => handlePublish(true)}
+              disabled={isSaving}
+              className="px-8 py-3 bg-[#16425b] text-white rounded-lg hover:bg-[#1a5270] transition-colors font-medium disabled:opacity-50"
+            >
+              {isSaving ? 'Lagrer...' : 'Publiser'}
             </button>
-            <button className="px-8 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium">
+            <button 
+              onClick={() => handlePublish(false)}
+              disabled={isSaving}
+              className="px-8 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium disabled:opacity-50"
+            >
               Lagre som kladd
             </button>
             <button
@@ -277,58 +398,83 @@ export default function ArrangementerPage() {
 
       {/* List of events */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
-              <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Arrangement</th>
-              <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Dato & tid</th>
-              <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Sted</th>
-              <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Påmeldte</th>
-              <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Status</th>
-              <th className="text-right px-6 py-4 text-sm font-semibold text-gray-900">Handlinger</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {arrangementer.map((arr) => (
-              <tr key={arr.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4">
-                  <div className="font-medium text-gray-900">{arr.title}</div>
-                </td>
-                <td className="px-6 py-4 text-gray-600">
-                  {arr.date} kl. {arr.time}
-                </td>
-                <td className="px-6 py-4 text-gray-600">{arr.branch}</td>
-                <td className="px-6 py-4">
-                  <div className="text-gray-900 font-medium">{arr.registered} / {arr.spots}</div>
-                  <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                    <div
-                      className="bg-green-500 h-2 rounded-full"
-                      style={{ width: `${(arr.registered / arr.spots) * 100}%` }}
-                    />
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${
-                    arr.status === 'Publisert'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {arr.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <button className="text-[#16425b] hover:text-[#1a5270] font-medium text-sm mr-4">
-                    Rediger
-                  </button>
-                  <button className="text-red-600 hover:text-red-800 font-medium text-sm">
-                    Slett
-                  </button>
-                </td>
+        {isLoading ? (
+          <div className="p-8 text-center text-gray-500">
+            Laster arrangementer...
+          </div>
+        ) : arrangementer.length === 0 ? (
+          <div className="p-8 text-center text-gray-500">
+            Ingen arrangementer ennå. Opprett ditt første!
+          </div>
+        ) : (
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Arrangement</th>
+                <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Dato & tid</th>
+                <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Sted</th>
+                <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Påmeldte</th>
+                <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Status</th>
+                <th className="text-right px-6 py-4 text-sm font-semibold text-gray-900">Handlinger</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {arrangementer.map((arr) => (
+                <tr key={arr.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4">
+                    <div className="font-medium text-gray-900">{arr.tittel}</div>
+                    <div className="text-sm text-gray-500">{arr.kategori}</div>
+                  </td>
+                  <td className="px-6 py-4 text-gray-600">
+                    {new Date(arr.dato).toLocaleDateString('nb-NO')} kl. {arr.klokkeslett}
+                  </td>
+                  <td className="px-6 py-4 text-gray-600">{arr.sted}</td>
+                  <td className="px-6 py-4">
+                    <div className="text-gray-900 font-medium">{arr.påmeldte} / {arr.kapasitet}</div>
+                    <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                      <div
+                        className="bg-green-500 h-2 rounded-full"
+                        style={{ width: `${arr.kapasitet > 0 ? (arr.påmeldte / arr.kapasitet) * 100 : 0}%` }}
+                      />
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${
+                      arr.publisert
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {arr.publisert ? 'Publisert' : 'Kladd'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <button 
+                      onClick={() => handleDuplicate(arr)}
+                      className="text-blue-600 hover:text-blue-800 font-medium text-sm mr-4"
+                      title="Dupliser arrangement"
+                    >
+                      📋 Dupliser
+                    </button>
+                    <button className="text-[#16425b] hover:text-[#1a5270] font-medium text-sm mr-4">
+                      Rediger
+                    </button>
+                    <button className="text-red-600 hover:text-red-800 font-medium text-sm">
+                      Slett
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
+
+      {/* Toast notification */}
+      {showToast && (
+        <div className="fixed bottom-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg">
+          {toastMessage}
+        </div>
+      )}
     </div>
   )
 }

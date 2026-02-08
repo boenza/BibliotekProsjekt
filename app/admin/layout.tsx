@@ -8,6 +8,7 @@ const navigation = [
   { name: 'Anbefalinger', href: '/admin/innhold/anbefalinger', icon: '⭐' },
   { name: 'Artikler', href: '/admin/innhold/artikler', icon: '📝' },
   { name: 'Arrangementer', href: '/admin/arrangementer', icon: '📅' },
+  { name: 'Varsler', href: '/admin/varsler', icon: '⚠️' },
   { name: 'Samling', href: '/admin/samling', icon: '📚' },
   { name: 'Innstillinger', href: '/admin/innstillinger', icon: '⚙️' },
 ]

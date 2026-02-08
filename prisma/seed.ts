@@ -81,6 +81,21 @@ async function main() {
 
   console.log('✅ Opprettet filialer')
 
+  // === DEMO BRUKER ===
+  const demoBruker = await prisma.bruker.create({
+    data: {
+      id: 'demo-user-1',
+      navn: 'Demo Bruker',
+      epost: 'demo@bergen.bibliotek.no',
+      bibliotekkortnummer: '1234567890',
+      pin: '1234', // I produksjon: hashed med bcrypt
+      hjemmebibliotek: 'Bergen Hovedbibliotek',
+      rolle: 'BRUKER'
+    }
+  })
+
+  console.log('✅ Opprettet demo-bruker')
+
   // === BØKER ===
   const bøker = await prisma.bok.createMany({
     data: [
@@ -119,11 +134,111 @@ async function main() {
         bildeUrl: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400',
         antallEks: 4,
         tilgjengelig: 4
+      },
+      // Agnes Ravatn bøker (for brukertest)
+      {
+        tittel: 'Dei sju dørene',
+        forfatter: 'Agnes Ravatn',
+        isbn: '9788205537170',
+        utgivelsesår: 2020,
+        forlag: 'Samlaget',
+        sjanger: 'Skjønnlitteratur',
+        beskrivelse: 'En spennende roman om en student som flytter inn hos en eldre kvinne på Vestlandet.',
+        bildeUrl: 'https://images.unsplash.com/photo-1589998059171-988d887df646?w=400',
+        antallEks: 5,
+        tilgjengelig: 3
+      },
+      {
+        tittel: 'Fugletribunalet',
+        forfatter: 'Agnes Ravatn',
+        isbn: '9788205484498',
+        utgivelsesår: 2013,
+        forlag: 'Samlaget',
+        sjanger: 'Skjønnlitteratur',
+        beskrivelse: 'En psykologisk thriller om to kvinner i en hytte i fjellet.',
+        bildeUrl: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=400',
+        antallEks: 3,
+        tilgjengelig: 2
+      },
+      {
+        tittel: 'Veke 53',
+        forfatter: 'Agnes Ravatn',
+        isbn: '9788205519282',
+        utgivelsesår: 2016,
+        forlag: 'Samlaget',
+        sjanger: 'Skjønnlitteratur',
+        beskrivelse: 'En roman om identitet, seksualitet og selvfornektelse.',
+        bildeUrl: 'https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=400',
+        antallEks: 2,
+        tilgjengelig: 2
       }
     ]
   })
 
-  console.log('✅ Opprettet bøker')
+  console.log('✅ Opprettet bøker (inkludert Agnes Ravatn)')
+
+  // Verifiser at Agnes Ravatn bøker ble opprettet
+  const agnesBooks = await prisma.bok.findMany({
+    where: { forfatter: { contains: 'Agnes', mode: 'insensitive' } }
+  })
+  console.log(`   → Fant ${agnesBooks.length} Agnes Ravatn bøker:`)
+  agnesBooks.forEach(b => console.log(`      - ${b.tittel}`))
+
+  // Hent bøker for lån/reservasjoner
+  const toreBook = await prisma.bok.findFirst({ where: { isbn: '9788205464377' } })
+  const dopplerBook = await prisma.bok.findFirst({ where: { isbn: '9788203234569' } })
+
+  // === LÅN (for demo-bruker) ===
+  if (toreBook) {
+    const forfallsdato1 = new Date()
+    forfallsdato1.setDate(forfallsdato1.getDate() + 14) // 2 uker frem
+
+    await prisma.lån.create({
+      data: {
+        brukerId: demoBruker.id,
+        bokId: toreBook.id,
+        filial: 'Bergen Hovedbibliotek',
+        forfallsdato: forfallsdato1,
+        fornyet: 0
+      }
+    })
+
+    const forfallsdato2 = new Date()
+    forfallsdato2.setDate(forfallsdato2.getDate() + 7) // 1 uke frem
+
+    await prisma.lån.create({
+      data: {
+        brukerId: demoBruker.id,
+        bokId: dopplerBook!.id,
+        filial: 'Laksevåg bibliotek',
+        forfallsdato: forfallsdato2,
+        fornyet: 1
+      }
+    })
+  }
+
+  console.log('✅ Opprettet lån')
+
+  // === RESERVASJONER (for demo-bruker) ===
+  const historienBook = await prisma.bok.findFirst({ where: { isbn: '9788202478469' } })
+  
+  if (historienBook) {
+    const utløper = new Date()
+    utløper.setDate(utløper.getDate() + 14)
+
+    await prisma.reservasjon.create({
+      data: {
+        brukerId: demoBruker.id,
+        bokId: historienBook.id,
+        filial: 'Bergen Hovedbibliotek',
+        plassering: 1,
+        utløper,
+        klar: true
+      }
+    })
+  }
+
+  console.log('✅ Opprettet reservasjoner')
 
   // === ANBEFALINGER ===
   const anbefalinger = await prisma.anbefaling.createMany({

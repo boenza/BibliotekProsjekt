@@ -1,19 +1,95 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+
+interface Anbefaling {
+  id: string
+  tittel: string
+  forfatter: string | null
+  beskrivelse: string
+  bildeUrl: string | null
+  publisert: boolean
+  opprettet: string
+}
 
 export default function AnbefalingerPage() {
   const [showNewForm, setShowNewForm] = useState(false)
   const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
   const [content, setContent] = useState('')
+  const [imageUrl, setImageUrl] = useState('')
   const [aiSuggestion, setAiSuggestion] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [anbefalinger, setAnbefalinger] = useState<Anbefaling[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
 
-  const anbefalinger = [
-    { id: 1, title: 'Nordlys i november', book: 'Maja Lunde', status: 'Publisert', date: '2026-02-05' },
-    { id: 2, title: 'En gripende historie', book: 'Bror din på prærien', status: 'Kladd', date: '2026-02-04' },
-    { id: 3, title: 'Perfekt for vinterkvelder', book: 'Vinterhav', status: 'Publisert', date: '2026-02-03' },
-  ]
+  // Hent anbefalinger fra database
+  useEffect(() => {
+    fetchAnbefalinger()
+  }, [])
+
+  const fetchAnbefalinger = async () => {
+    try {
+      const response = await fetch('/api/anbefalinger')
+      const data = await response.json()
+      setAnbefalinger(data)
+    } catch (error) {
+      console.error('Error fetching anbefalinger:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handlePublish = async (publisert: boolean) => {
+    if (!title || !content) {
+      alert('Tittel og beskrivelse er påkrevd!')
+      return
+    }
+
+    setIsSaving(true)
+
+    try {
+      const response = await fetch('/api/anbefalinger', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tittel: title,
+          forfatter: author || null,
+          beskrivelse: content,
+          bildeUrl: imageUrl || null,
+          publisert
+        }),
+      })
+
+      if (response.ok) {
+        // Reset form
+        setTitle('')
+        setAuthor('')
+        setContent('')
+        setImageUrl('')
+        setAiSuggestion('')
+        setShowNewForm(false)
+        
+        // Refresh list
+        fetchAnbefalinger()
+        
+        // Show success message
+        setToastMessage(publisert ? 'Anbefaling publisert!' : 'Anbefaling lagret som kladd!')
+        setShowToast(true)
+        setTimeout(() => setShowToast(false), 3000)
+      } else {
+        alert('Kunne ikke lagre anbefaling')
+      }
+    } catch (error) {
+      console.error('Error saving anbefaling:', error)
+      alert('Noe gikk galt ved lagring')
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
   const handleAIAssist = async () => {
     if (!title) {
@@ -73,27 +149,41 @@ export default function AnbefalingerPage() {
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tittel på anbefaling
+                Boktittel *
               </label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#16425b] focus:border-transparent"
-                placeholder="F.eks. 'Perfekt sommerlesning'"
+                placeholder="F.eks. 'Nordlys i november'"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Velg bok fra samlingen
+                Forfatter
               </label>
-              <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#16425b] focus:border-transparent">
-                <option>Søk etter bok...</option>
-                <option>Nordlys i november - Maja Lunde</option>
-                <option>Bror din på prærien - Torvald Sund</option>
-                <option>Vinterhav - Helene Uri</option>
-              </select>
+              <input
+                type="text"
+                value={author}
+                onChange={(e) => setAuthor(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#16425b] focus:border-transparent"
+                placeholder="F.eks. 'Maja Lunde'"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Bilde-URL (valgfritt)
+              </label>
+              <input
+                type="text"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#16425b] focus:border-transparent"
+                placeholder="https://images.unsplash.com/..."
+              />
             </div>
 
             <div>
@@ -142,10 +232,18 @@ export default function AnbefalingerPage() {
             )}
 
             <div className="flex items-center space-x-4 pt-6 border-t border-gray-200">
-              <button className="px-8 py-3 bg-[#16425b] text-white rounded-lg hover:bg-[#1a5270] transition-colors font-medium">
-                Publiser
+              <button 
+                onClick={() => handlePublish(true)}
+                disabled={isSaving}
+                className="px-8 py-3 bg-[#16425b] text-white rounded-lg hover:bg-[#1a5270] transition-colors font-medium disabled:opacity-50"
+              >
+                {isSaving ? 'Lagrer...' : 'Publiser'}
               </button>
-              <button className="px-8 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium">
+              <button 
+                onClick={() => handlePublish(false)}
+                disabled={isSaving}
+                className="px-8 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium disabled:opacity-50"
+              >
                 Lagre som kladd
               </button>
               <button
@@ -161,46 +259,65 @@ export default function AnbefalingerPage() {
 
       {/* List of recommendations */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
-              <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Tittel</th>
-              <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Bok</th>
-              <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Status</th>
-              <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Dato</th>
-              <th className="text-right px-6 py-4 text-sm font-semibold text-gray-900">Handlinger</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {anbefalinger.map((anbefaling) => (
-              <tr key={anbefaling.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4">
-                  <div className="font-medium text-gray-900">{anbefaling.title}</div>
-                </td>
-                <td className="px-6 py-4 text-gray-600">{anbefaling.book}</td>
-                <td className="px-6 py-4">
-                  <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${
-                    anbefaling.status === 'Publisert'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {anbefaling.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-gray-600">{anbefaling.date}</td>
-                <td className="px-6 py-4 text-right">
-                  <button className="text-[#16425b] hover:text-[#1a5270] font-medium text-sm mr-4">
-                    Rediger
-                  </button>
-                  <button className="text-red-600 hover:text-red-800 font-medium text-sm">
-                    Slett
-                  </button>
-                </td>
+        {isLoading ? (
+          <div className="p-8 text-center text-gray-500">
+            Laster anbefalinger...
+          </div>
+        ) : anbefalinger.length === 0 ? (
+          <div className="p-8 text-center text-gray-500">
+            Ingen anbefalinger ennå. Opprett din første!
+          </div>
+        ) : (
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Tittel</th>
+                <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Forfatter</th>
+                <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Status</th>
+                <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Opprettet</th>
+                <th className="text-right px-6 py-4 text-sm font-semibold text-gray-900">Handlinger</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {anbefalinger.map((anbefaling) => (
+                <tr key={anbefaling.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4">
+                    <div className="font-medium text-gray-900">{anbefaling.tittel}</div>
+                  </td>
+                  <td className="px-6 py-4 text-gray-600">{anbefaling.forfatter || '-'}</td>
+                  <td className="px-6 py-4">
+                    <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${
+                      anbefaling.publisert
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {anbefaling.publisert ? 'Publisert' : 'Kladd'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-gray-600">
+                    {new Date(anbefaling.opprettet).toLocaleDateString('nb-NO')}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <button className="text-[#16425b] hover:text-[#1a5270] font-medium text-sm mr-4">
+                      Rediger
+                    </button>
+                    <button className="text-red-600 hover:text-red-800 font-medium text-sm">
+                      Slett
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
+
+      {/* Toast notification */}
+      {showToast && (
+        <div className="fixed bottom-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg">
+          {toastMessage}
+        </div>
+      )}
     </div>
   )
 }

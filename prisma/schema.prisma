@@ -21,11 +21,27 @@ model Anbefaling {
   bildeUrl    String?
   sjanger     String?
   målgruppe   String?  // "Voksen", "Ungdom", "Barn"
+  bokId       String?  // Kobling til bok i katalog
   publisert   Boolean  @default(false)
   opprettet   DateTime @default(now())
   oppdatert   DateTime @updatedAt
 
   @@map("anbefalinger")
+}
+
+model Varsel {
+  id            String   @id @default(cuid())
+  tittel        String
+  melding       String   @db.Text
+  type          String   // "info", "advarsel", "viktig"
+  ikon          String   @default("ℹ️")
+  visningStart  DateTime @default(now())
+  visningSlutt  DateTime?
+  aktiv         Boolean  @default(true)
+  opprettet     DateTime @default(now())
+  oppdatert     DateTime @updatedAt
+
+  @@map("varsler")
 }
 
 model Arrangement {
@@ -42,6 +58,8 @@ model Arrangement {
   påmeldte      Int      @default(0)
   påmeldingÅpen Boolean  @default(true)
   publisert     Boolean  @default(false)
+  bokId         String?  // Kobling til bok
+  anbefalingId  String?  // Kobling til anbefaling
   opprettet     DateTime @default(now())
   oppdatert     DateTime @updatedAt
 
@@ -73,9 +91,11 @@ model Artikkel {
 model Bruker {
   id                    String   @id @default(cuid())
   navn                  String
-  epost                 String   @unique
+  epost                 String?  @unique
+  emailVerified         DateTime?
+  image                 String?
   bibliotekkortnummer   String   @unique
-  passordHash           String?  // Null hvis SSO
+  pin                   String?  // Hashed PIN-kode for innlogging
   telefon               String?
   adresse               String?
   postnummer            String?
@@ -86,12 +106,56 @@ model Bruker {
   opprettet             DateTime @default(now())
   oppdatert             DateTime @updatedAt
 
+  // NextAuth relasjoner
+  accounts      Account[]
+  sessions      Session[]
+
   lån           Lån[]
   reservasjoner Reservasjon[]
   gebyrer       Gebyr[]
   påmeldinger   Påmelding[]
 
   @@map("brukere")
+}
+
+// NextAuth modeller
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user Bruker @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         Bruker   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verificationtokens")
 }
 
 // ============================================
