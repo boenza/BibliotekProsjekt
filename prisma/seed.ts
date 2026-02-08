@@ -182,7 +182,7 @@ async function main() {
     where: { forfatter: { contains: 'Agnes', mode: 'insensitive' } }
   })
   console.log(`   → Fant ${agnesBooks.length} Agnes Ravatn bøker:`)
-  agnesBooks.forEach(b => console.log(`      - ${b.tittel}`))
+  agnesBooks.forEach((b: any) => console.log(`      - ${b.tittel}`))
 
   // Hent bøker for lån/reservasjoner
   const toreBook = await prisma.bok.findFirst({ where: { isbn: '9788205464377' } })
