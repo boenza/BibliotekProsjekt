@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import PåmeldingModal from '@/components/PåmeldingModal'
+import PublicHeader from '@/components/PublicHeader'
 
 const CATEGORIES = ['Alle', 'Forfattermøte', 'Barn', 'Ungdom', 'Kurs', 'Konsert', 'Bokklubb']
 
@@ -75,22 +76,7 @@ export default function ArrangementerPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-[#16425b] text-white py-6">
-        <div className="container-custom">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold">Bergen Bibliotek</h1>
-              <p className="text-white/80 mt-1">Arrangementer</p>
-            </div>
-            <nav className="flex items-center space-x-6">
-              <Link href="/" className="hover:text-white/80">Hjem</Link>
-              <Link href="/katalog" className="hover:text-white/80">Katalog</Link>
-              <Link href="/arrangementer" className="font-semibold">Arrangementer</Link>
-              <Link href="/min-side" className="hover:text-white/80">Min side</Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <PublicHeader />
 
       <main className="container-custom py-12">
         {/* Success message */}

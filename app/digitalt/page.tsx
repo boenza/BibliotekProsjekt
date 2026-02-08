@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import VarselBanner from '@/components/VarselBanner'
+import PublicHeader from '@/components/PublicHeader'
 
 type TabType = 'ebøker' | 'lydbøker' | 'film'
 
@@ -80,23 +81,7 @@ export default function DigitaltInnholdPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-[#16425b] text-white py-6">
-        <div className="container-custom">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold">Digitalt innhold</h1>
-              <p className="text-white/80 mt-1">E-bøker, lydbøker og streaming</p>
-            </div>
-            <nav className="flex items-center space-x-6">
-              <Link href="/" className="hover:text-white/80">Hjem</Link>
-              <Link href="/katalog" className="hover:text-white/80">Katalog</Link>
-              <Link href="/arrangementer" className="hover:text-white/80">Arrangementer</Link>
-              <Link href="/digitalt" className="font-semibold">Digitalt</Link>
-              <Link href="/min-side" className="hover:text-white/80">Min side</Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <PublicHeader />
 
       {/* Varsler */}
       <div className="container-custom py-4">

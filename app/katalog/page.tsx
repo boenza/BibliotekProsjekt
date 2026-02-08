@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import VarselBanner from '@/components/VarselBanner'
 import ReserverModal from '@/components/ReserverModal'
+import PublicHeader from '@/components/PublicHeader'
 
 const GENRES = ['Alle', 'Skjønnlitteratur', 'Krim', 'Fantasy', 'Fakta', 'Barn', 'Ungdom']
 
@@ -96,22 +97,7 @@ export default function KatalogPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-[#16425b] text-white py-6">
-        <div className="container-custom">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold">Bergen Bibliotek</h1>
-              <p className="text-white/80 mt-1">Søk i vår samling</p>
-            </div>
-            <nav className="flex items-center space-x-6">
-              <Link href="/" className="hover:text-white/80">Hjem</Link>
-              <Link href="/katalog" className="font-semibold">Katalog</Link>
-              <Link href="/arrangementer" className="hover:text-white/80">Arrangementer</Link>
-              <Link href="/min-side" className="hover:text-white/80">Min side</Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <PublicHeader />
 
       {/* Varsler */}
       <div className="container-custom py-4">

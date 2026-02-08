@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import PublicHeader from '@/components/PublicHeader'
 
 interface Loan {
   id: string
@@ -195,22 +196,7 @@ export default function MinSidePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-[#16425b] text-white py-6">
-        <div className="container-custom">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold">Bergen Bibliotek</h1>
-              <p className="text-white/80 mt-1">Min side</p>
-            </div>
-            <nav className="flex items-center space-x-6">
-              <Link href="/" className="hover:text-white/80">Hjem</Link>
-              <Link href="/katalog" className="hover:text-white/80">Katalog</Link>
-              <Link href="/arrangementer" className="hover:text-white/80">Arrangementer</Link>
-              <Link href="/min-side" className="font-semibold">Min side</Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <PublicHeader />
 
       <main className="container-custom py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
