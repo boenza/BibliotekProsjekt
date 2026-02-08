@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import VarselBanner from '@/components/VarselBanner'
+import ReserverModal from '@/components/ReserverModal'
 
 const GENRES = ['Alle', 'Skjønnlitteratur', 'Krim', 'Fantasy', 'Fakta', 'Barn', 'Ungdom']
 
@@ -25,6 +26,9 @@ export default function KatalogPage() {
   const [bøker, setBøker] = useState<Book[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isSearching, setIsSearching] = useState(false)
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null)
+  const [showReserverModal, setShowReserverModal] = useState(false)
+  const [successMessage, setSuccessMessage] = useState('')
 
   // Initial load
   useEffect(() => {
@@ -71,6 +75,19 @@ export default function KatalogPage() {
     }
   }
 
+  const handleReserver = (book: Book) => {
+    setSelectedBook(book)
+    setShowReserverModal(true)
+  }
+
+  const handleReservasjonSuccess = () => {
+    setSuccessMessage('Bok reservert! Se reservasjon på Min side.')
+    setTimeout(() => setSuccessMessage(''), 5000)
+    
+    // Refresh books for å oppdatere tilgjengelighet
+    fetchBooks()
+  }
+
   const filteredBooks = bøker.filter(book => {
     const matchesAvailability = !showAvailableOnly || book.tilgjengelig > 0
     return matchesAvailability
@@ -99,6 +116,22 @@ export default function KatalogPage() {
       {/* Varsler */}
       <div className="container-custom py-4">
         <VarselBanner />
+        
+        {/* Success message */}
+        {successMessage && (
+          <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800 flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <span className="text-2xl">✓</span>
+              <span className="font-medium">{successMessage}</span>
+            </div>
+            <button 
+              onClick={() => setSuccessMessage('')}
+              className="text-green-600 hover:text-green-800"
+            >
+              ×
+            </button>
+          </div>
+        )}
       </div>
 
       <main className="container-custom py-12">
@@ -217,7 +250,10 @@ export default function KatalogPage() {
 
                   <div className="flex items-center space-x-2">
                     {book.tilgjengelig > 0 ? (
-                      <button className="flex-1 bg-[#16425b] text-white py-2 rounded-lg hover:bg-[#1a5270] transition-colors font-medium">
+                      <button 
+                        onClick={() => handleReserver(book)}
+                        className="flex-1 bg-[#16425b] text-white py-2 rounded-lg hover:bg-[#1a5270] transition-colors font-medium"
+                      >
                         Reserver
                       </button>
                     ) : (
@@ -235,6 +271,22 @@ export default function KatalogPage() {
           </div>
         )}
       </main>
+
+      {/* Reserver Modal */}
+      {selectedBook && (
+        <ReserverModal
+          isOpen={showReserverModal}
+          onClose={() => setShowReserverModal(false)}
+          bok={{
+            id: selectedBook.id,
+            tittel: selectedBook.tittel,
+            forfatter: selectedBook.forfatter,
+            isbn: selectedBook.isbn || '',
+            coverUrl: selectedBook.bildeUrl || undefined
+          }}
+          onSuccess={handleReservasjonSuccess}
+        />
+      )}
     </div>
   )
 }
