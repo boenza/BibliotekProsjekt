@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import PåmeldingModal from '@/components/PåmeldingModal'
 
 const CATEGORIES = ['Alle', 'Forfattermøte', 'Barn', 'Ungdom', 'Kurs', 'Konsert', 'Bokklubb']
 
@@ -23,6 +24,9 @@ export default function ArrangementerPage() {
   const [selectedCategory, setSelectedCategory] = useState('Alle')
   const [arrangementer, setArrangementer] = useState<Arrangement[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [selectedArrangement, setSelectedArrangement] = useState<Arrangement | null>(null)
+  const [showPåmeldingModal, setShowPåmeldingModal] = useState(false)
+  const [successMessage, setSuccessMessage] = useState('')
 
   useEffect(() => {
     fetchArrangementer()
@@ -51,6 +55,19 @@ export default function ArrangementerPage() {
     }
   }
 
+  const handleMeldPå = (arrangement: Arrangement) => {
+    setSelectedArrangement(arrangement)
+    setShowPåmeldingModal(true)
+  }
+
+  const handlePåmeldingSuccess = () => {
+    setSuccessMessage('Du er nå påmeldt! Se påmeldinger på Min side.')
+    setTimeout(() => setSuccessMessage(''), 5000)
+    
+    // Refresh arrangementer for å oppdatere påmeldte-count
+    fetchArrangementer()
+  }
+
   const filteredEvents = arrangementer.filter(event =>
     event.publisert && (selectedCategory === 'Alle' || event.kategori === selectedCategory)
   )
@@ -76,6 +93,22 @@ export default function ArrangementerPage() {
       </header>
 
       <main className="container-custom py-12">
+        {/* Success message */}
+        {successMessage && (
+          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800 flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <span className="text-2xl">✓</span>
+              <span className="font-medium">{successMessage}</span>
+            </div>
+            <button 
+              onClick={() => setSuccessMessage('')}
+              className="text-green-600 hover:text-green-800"
+            >
+              ×
+            </button>
+          </div>
+        )}
+
         {/* Category filters */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
           <div className="flex items-center space-x-4">
@@ -167,8 +200,12 @@ export default function ArrangementerPage() {
                     </div>
 
                     <div className="flex items-center space-x-4 mt-4">
-                      <button className="px-6 py-3 bg-[#16425b] text-white rounded-lg hover:bg-[#1a5270] transition-colors font-medium">
-                        Meld deg på
+                      <button 
+                        onClick={() => handleMeldPå(event)}
+                        disabled={event.påmeldte >= event.kapasitet}
+                        className="px-6 py-3 bg-[#16425b] text-white rounded-lg hover:bg-[#1a5270] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {event.påmeldte >= event.kapasitet ? 'Fullt' : 'Meld deg på'}
                       </button>
                       <button className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium">
                         Les mer
@@ -181,6 +218,16 @@ export default function ArrangementerPage() {
           </div>
         )}
       </main>
+
+      {/* Påmelding Modal */}
+      {selectedArrangement && (
+        <PåmeldingModal
+          isOpen={showPåmeldingModal}
+          onClose={() => setShowPåmeldingModal(false)}
+          arrangement={selectedArrangement}
+          onSuccess={handlePåmeldingSuccess}
+        />
+      )}
     </div>
   )
 }

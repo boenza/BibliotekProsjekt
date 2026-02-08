@@ -24,13 +24,34 @@ interface Reservation {
   klar: boolean
 }
 
+interface Påmelding {
+  id: string
+  arrangementId: string
+  navn: string
+  epost: string
+  antallPersoner: number
+  kommentar: string | null
+  påmeldt: string
+  arrangement: {
+    id: string
+    tittel: string
+    beskrivelse: string
+    dato: string
+    klokkeslett: string
+    sted: string
+    kategori: string
+  }
+}
+
 export default function MinSidePage() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [lån, setLån] = useState<Loan[]>([])
   const [reservasjoner, setReservasjoner] = useState<Reservation[]>([])
+  const [påmeldinger, setPåmeldinger] = useState<Påmelding[]>([])
   const [isLoadingLoans, setIsLoadingLoans] = useState(true)
   const [isLoadingReservations, setIsLoadingReservations] = useState(true)
+  const [isLoadingPåmeldinger, setIsLoadingPåmeldinger] = useState(true)
 
   // Redirect til login hvis ikke innlogget
   useEffect(() => {
@@ -43,6 +64,7 @@ export default function MinSidePage() {
     if (status === 'authenticated') {
       fetchLoans()
       fetchReservations()
+      fetchPåmeldinger()
     }
   }, [status])
 
@@ -86,6 +108,26 @@ export default function MinSidePage() {
     }
   }
 
+  const fetchPåmeldinger = async () => {
+    try {
+      const response = await fetch('/api/pameldinger')
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch påmeldinger')
+      }
+      
+      const data = await response.json()
+      
+      if (Array.isArray(data)) {
+        setPåmeldinger(data)
+      }
+    } catch (error) {
+      console.error('Error fetching påmeldinger:', error)
+    } finally {
+      setIsLoadingPåmeldinger(false)
+    }
+  }
+
   const handleRenewLoan = async (lånId: string) => {
     try {
       const response = await fetch('/api/laan', {
@@ -103,6 +145,29 @@ export default function MinSidePage() {
       }
     } catch (error) {
       console.error('Error renewing loan:', error)
+      alert('Noe gikk galt')
+    }
+  }
+
+  const handleAvmeld = async (påmeldingId: string) => {
+    if (!confirm('Er du sikker på at du vil avmelde deg fra dette arrangementet?')) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/pameldinger?id=${påmeldingId}`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        // Refresh påmeldinger list
+        fetchPåmeldinger()
+        alert('Du er nå avmeldt')
+      } else {
+        alert('Kunne ikke avmelde')
+      }
+    } catch (error) {
+      console.error('Error canceling påmelding:', error)
       alert('Noe gikk galt')
     }
   }
@@ -175,6 +240,11 @@ export default function MinSidePage() {
                 <div className="p-4 bg-gray-50 rounded-lg">
                   <div className="text-sm text-gray-600 mb-1">Reservasjoner</div>
                   <div className="text-2xl font-bold text-gray-900">{reservasjoner.length}</div>
+                </div>
+                
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <div className="text-sm text-gray-600 mb-1">Påmeldinger</div>
+                  <div className="text-2xl font-bold text-gray-900">{påmeldinger.length}</div>
                 </div>
                 
                 <div className="p-4 bg-gray-50 rounded-lg">
@@ -289,6 +359,79 @@ export default function MinSidePage() {
                 </div>
               ) : (
                 <p className="text-gray-500 text-center py-8">Ingen aktive reservasjoner</p>
+              )}
+            </div>
+
+            {/* Påmeldinger */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Mine påmeldinger</h3>
+              
+              {isLoadingPåmeldinger ? (
+                <div className="text-center py-8 text-gray-500">
+                  Laster påmeldinger...
+                </div>
+              ) : påmeldinger.length > 0 ? (
+                <div className="space-y-4">
+                  {påmeldinger.map(påmelding => {
+                    const arrangementDato = new Date(påmelding.arrangement.dato)
+                    const erPassert = arrangementDato < new Date()
+                    
+                    return (
+                      <div key={påmelding.id} className={`flex items-center justify-between p-4 border rounded-lg ${
+                        erPassert ? 'border-gray-300 bg-gray-50' : 'border-[#16425b]/20 bg-[#16425b]/5'
+                      }`}>
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2 mb-1">
+                            <h4 className="font-semibold text-gray-900">{påmelding.arrangement.tittel}</h4>
+                            {erPassert && (
+                              <span className="px-2 py-1 bg-gray-300 text-gray-700 text-xs rounded-full font-medium">
+                                Avholdt
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-600 mb-2">{påmelding.arrangement.kategori}</p>
+                          <div className="space-y-1">
+                            <p className="text-sm text-gray-700">
+                              📅 {arrangementDato.toLocaleDateString('nb-NO', { 
+                                weekday: 'long', 
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric' 
+                              })}
+                            </p>
+                            <p className="text-sm text-gray-700">
+                              🕐 {påmelding.arrangement.klokkeslett}
+                            </p>
+                            <p className="text-sm text-gray-700">
+                              📍 {påmelding.arrangement.sted}
+                            </p>
+                            <p className="text-sm text-gray-700">
+                              👥 {påmelding.antallPersoner} {påmelding.antallPersoner === 1 ? 'person' : 'personer'}
+                            </p>
+                          </div>
+                          {påmelding.kommentar && (
+                            <p className="text-xs text-gray-500 mt-2 italic">
+                              Kommentar: {påmelding.kommentar}
+                            </p>
+                          )}
+                          <p className="text-xs text-gray-400 mt-2">
+                            Påmeldt: {new Date(påmelding.påmeldt).toLocaleDateString('nb-NO')}
+                          </p>
+                        </div>
+                        {!erPassert && (
+                          <button 
+                            onClick={() => handleAvmeld(påmelding.id)}
+                            className="px-4 py-2 border-2 border-gray-300 text-gray-700 rounded-lg hover:border-red-500 hover:text-red-600 transition-colors"
+                          >
+                            Avmeld
+                          </button>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              ) : (
+                <p className="text-gray-500 text-center py-8">Ingen aktive påmeldinger</p>
               )}
             </div>
           </div>

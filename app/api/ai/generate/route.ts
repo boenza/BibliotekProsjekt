@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 }
 
 function getSystemPrompt(type: string): string {
-  const prompts = {
+  const prompts: Record<string, string> = {
     recommendation: `Du er en erfaren bibliotekansatt som skriver engasjerende bokanbefalinger for norske bibliotekbrukere. 
     
 Skriv på norsk (bokmål).
@@ -101,7 +101,7 @@ Fokuser på hva brukere faktisk søker etter.`
 
 function getDemoResponse(type: string, bookTitle?: string, bookAuthor?: string): string {
   // Demo-responser når vi ikke har API-nøkkel
-  const demos = {
+  const demos: Record<string, string> = {
     recommendation: `Dette er en gripende roman som tar deg med på en reise gjennom norsk natur og menneskelige relasjoner. Perfekt for lesere som liker sterke karakterer, vakre landskapsbeskrivelser og historier som gir deg noe å tenke på lenge etter siste side. Anbefales spesielt for fans av nordisk samtidslitteratur.`,
     
     event: `Et inspirerende møte hvor deltakerne får innblikk i kreativ skriving og forfatterens arbeidsprosess. Arrangementet passer for alle som er interessert i litteratur, enten du selv skriver eller bare elsker å lese. Ta med spørsmål – det blir god tid til dialog!`,

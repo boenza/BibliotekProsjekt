@@ -117,7 +117,7 @@ export async function getUserLoans(brukerId: string): Promise<ILSLoan[]> {
       orderBy: { forfallsdato: 'asc' }
     })
     
-    return lån.map(l => ({
+    return lån.map((l: any) => ({
       id: l.id,
       bokTittel: l.bok.tittel,
       forfatter: l.bok.forfatter,
@@ -159,7 +159,7 @@ export async function getUserReservations(brukerId: string): Promise<ILSReservat
       orderBy: { plassering: 'asc' }
     })
     
-    return reservasjoner.map(r => ({
+    return reservasjoner.map((r: any) => ({
       id: r.id,
       bokTittel: r.bok.tittel,
       forfatter: r.bok.forfatter,
