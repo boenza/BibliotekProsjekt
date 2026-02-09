@@ -5,7 +5,10 @@ import { prisma } from '@/lib/prisma'
 export async function GET() {
   try {
     const arrangementer = await prisma.arrangement.findMany({
-      orderBy: { dato: 'asc' }
+      orderBy: { dato: 'asc' },
+      where: {
+        publisert: true
+      }
     })
 
     return NextResponse.json(arrangementer)
@@ -64,58 +67,6 @@ export async function POST(request: NextRequest) {
     console.error('Error creating arrangement:', error)
     return NextResponse.json(
       { error: 'Kunne ikke opprette arrangement' },
-      { status: 500 }
-    )
-  }
-}
-
-// PATCH - Dupliser arrangement
-export async function PATCH(request: NextRequest) {
-  try {
-    const { id, action } = await request.json()
-
-    if (action === 'duplicate') {
-      // Hent original
-      const original = await prisma.arrangement.findUnique({
-        where: { id }
-      })
-
-      if (!original) {
-        return NextResponse.json(
-          { error: 'Arrangement ikke funnet' },
-          { status: 404 }
-        )
-      }
-
-      // Opprett kopi
-      const duplicate = await prisma.arrangement.create({
-        data: {
-          tittel: `${original.tittel} (kopi)`,
-          beskrivelse: original.beskrivelse,
-          dato: original.dato,
-          klokkeslett: original.klokkeslett,
-          varighet: original.varighet,
-          sted: original.sted,
-          kategori: original.kategori,
-          bildeUrl: original.bildeUrl,
-          kapasitet: original.kapasitet,
-          påmeldte: 0, // Reset påmeldte
-          påmeldingÅpen: original.påmeldingÅpen,
-          publisert: false // Kopier som utkast
-        }
-      })
-
-      return NextResponse.json(duplicate)
-    }
-
-    return NextResponse.json(
-      { error: 'Ugyldig action' },
-      { status: 400 }
-    )
-  } catch (error) {
-    console.error('Error duplicating arrangement:', error)
-    return NextResponse.json(
-      { error: 'Kunne ikke duplisere arrangement' },
       { status: 500 }
     )
   }
