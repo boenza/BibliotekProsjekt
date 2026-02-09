@@ -121,17 +121,6 @@ export default function KatalogPage() {
       </div>
 
       <main className="container-custom py-12">
-        {/* Search */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
-          <input
-            type="text"
-            placeholder="Søk etter tittel, forfatter eller ISBN..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-lg focus:border-[#16425b] focus:ring-2 focus:ring-[#16425b]/20 outline-none"
-          />
-        </div>
-
         {/* Filters */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
           <div className="flex items-center justify-between">

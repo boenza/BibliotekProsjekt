@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import PublicHeader from '@/components/PublicHeader'
+import Hero from '@/components/Hero'
 import VarselBanner from '@/components/VarselBanner'
 
 interface Arrangement {
@@ -35,76 +37,18 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header/Navigation */}
-      <header className="bg-[#16425b] text-white">
-        <div className="container-custom">
-          <div className="flex items-center justify-between py-4">
-            <Link href="/" className="flex items-center space-x-3">
-              <span className="text-3xl">📚</span>
-              <div>
-                <h1 className="text-2xl font-bold">Bergen Bibliotek</h1>
-                <p className="text-xs text-white/70">Felles Formidlingsløsning</p>
-              </div>
-            </Link>
-            
-            <nav className="hidden md:flex items-center space-x-8">
-              <Link href="/" className="hover:text-white/80 transition-colors font-medium">
-                Hjem
-              </Link>
-              <Link href="/katalog" className="hover:text-white/80 transition-colors">
-                Katalog
-              </Link>
-              <Link href="/digitalt" className="hover:text-white/80 transition-colors">
-                Digitalt innhold
-              </Link>
-              <Link href="/arrangementer" className="hover:text-white/80 transition-colors">
-                Arrangementer
-              </Link>
-              <Link 
-                href="/min-side" 
-                className="bg-white text-[#16425b] px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors font-medium"
-              >
-                Min side
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
-
+      {/* Header */}
+      <PublicHeader />
+      
+      {/* Hero Section */}
+      <Hero />
+      
       {/* Varsler */}
-      <div className="container-custom py-4">
+      <div className="container-custom -mt-6">
         <VarselBanner />
       </div>
 
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-[#16425b] to-[#2d6a8e] text-white py-20">
-        <div className="container-custom">
-          <div className="max-w-3xl">
-            <h2 className="text-5xl font-bold mb-6">
-              Velkommen til Bergen Bibliotek
-            </h2>
-            <p className="text-xl text-white/90 mb-8">
-              Utforsk tusenvis av bøker, e-bøker, lydbøker og filmer. 
-              Delta på arrangementer og oppdag nye favoritter.
-            </p>
-            <div className="flex items-center space-x-4">
-              <Link 
-                href="/katalog"
-                className="bg-white text-[#16425b] px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-colors"
-              >
-                Søk i katalogen
-              </Link>
-              <Link 
-                href="/digitalt"
-                className="bg-[#8b5cf6] text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-[#7c3aed] transition-colors"
-              >
-                Digitalt innhold
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
+      {/* Main Content */}
       <main className="container-custom py-12">
         {/* Quick Links */}
         <div className="grid md:grid-cols-3 gap-6 mb-16">

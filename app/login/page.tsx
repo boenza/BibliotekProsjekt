@@ -120,6 +120,19 @@ export default function LoginPage() {
             </div>
           </div>
 
+          {/* Registrer lenke */}
+          <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg text-center">
+            <p className="text-sm text-gray-700 mb-2">
+              Har du ikke lånekort ennå?
+            </p>
+            <Link
+              href="/registrer"
+              className="inline-block px-6 py-2 bg-[#2d7a50] text-white rounded-lg hover:bg-[#236142] transition-colors font-medium text-sm"
+            >
+              Registrer deg her →
+            </Link>
+          </div>
+
           {/* Footer */}
           <div className="mt-6 text-center">
             <Link href="/" className="text-sm text-gray-600 hover:text-gray-900">

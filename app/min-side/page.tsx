@@ -5,6 +5,10 @@ import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import PublicHeader from '@/components/PublicHeader'
+import QRLånekort from '@/components/QRLånekort'
+import Toast from '@/components/Toast'
+import StatsGrid from '@/components/StatsGrid'
+import Achievements from '@/components/Achievements'
 
 interface Loan {
   id: string
@@ -50,6 +54,15 @@ export default function MinSidePage() {
   const [lån, setLån] = useState<Loan[]>([])
   const [reservasjoner, setReservasjoner] = useState<Reservation[]>([])
   const [påmeldinger, setPåmeldinger] = useState<Påmelding[]>([])
+  const [activeTab, setActiveTab] = useState<'lån' | 'reservasjoner' | 'påmeldinger'>('lån')
+  const [isLoading, setIsLoading] = useState(true)
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
+  const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('success')
+
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+    setToastMessage(message)
+    setToastType(type)
+  }
   const [isLoadingLoans, setIsLoadingLoans] = useState(true)
   const [isLoadingReservations, setIsLoadingReservations] = useState(true)
   const [isLoadingPåmeldinger, setIsLoadingPåmeldinger] = useState(true)
@@ -140,13 +153,13 @@ export default function MinSidePage() {
       if (response.ok) {
         // Refresh loans list
         fetchLoans()
-        alert('Lån fornyet!')
+        showToast('Lånet er fornyet! ✓', 'success')
       } else {
-        alert('Kunne ikke fornye lån')
+        showToast('Kunne ikke fornye lån', 'error')
       }
     } catch (error) {
       console.error('Error renewing loan:', error)
-      alert('Noe gikk galt')
+      showToast('Noe gikk galt', 'error')
     }
   }
 
@@ -163,13 +176,13 @@ export default function MinSidePage() {
       if (response.ok) {
         // Refresh påmeldinger list
         fetchPåmeldinger()
-        alert('Du er nå avmeldt')
+        showToast('Du er nå avmeldt', 'success')
       } else {
-        alert('Kunne ikke avmelde')
+        showToast('Kunne ikke avmelde', 'error')
       }
     } catch (error) {
       console.error('Error canceling påmelding:', error)
-      alert('Noe gikk galt')
+      showToast('Noe gikk galt', 'error')
     }
   }
 
@@ -217,6 +230,14 @@ export default function MinSidePage() {
                 </p>
               </div>
 
+              {/* QR Lånekort */}
+              <div className="mb-6">
+                <QRLånekort 
+                  userNumber={(session?.user as any)?.bibliotekkortnummer || '0000000000'}
+                  userName={session?.user?.name || 'Bruker'}
+                />
+              </div>
+
               <div className="space-y-4">
                 <div className="p-4 bg-gray-50 rounded-lg">
                   <div className="text-sm text-gray-600 mb-1">Aktive lån</div>
@@ -255,174 +276,232 @@ export default function MinSidePage() {
 
           {/* Main content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Loans */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Mine lån</h3>
-              
-              {isLoadingLoans ? (
-                <div className="text-center py-8 text-gray-500">
-                  Laster lån...
-                </div>
-              ) : lån.length > 0 ? (
-                <div className="space-y-4">
-                  {lån.map(loan => (
-                    <div key={loan.id} className={`flex items-center justify-between p-4 border rounded-lg ${
-                      isOverdue(loan.forfallsdato) ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                    }`}>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900">{loan.bokTittel}</h4>
-                        <p className="text-sm text-gray-600">{loan.forfatter}</p>
-                        <p className="text-sm text-gray-500 mt-1">
-                          📍 {loan.filial}
-                        </p>
-                        <p className={`text-sm mt-1 ${
-                          isOverdue(loan.forfallsdato) ? 'text-red-600 font-medium' : 'text-gray-500'
+            {/* Stats */}
+            <StatsGrid 
+              booksThisYear={12}
+              eventsAttended={5}
+              readingStreak={7}
+              totalPages={3420}
+            />
+
+            {/* Achievements */}
+            <Achievements />
+
+            {/* Tabs */}
+            <div className="bg-white rounded-xl shadow-sm">
+              <div className="border-b border-gray-200">
+                <nav className="flex space-x-8 px-6" aria-label="Tabs">
+                  <button
+                    onClick={() => setActiveTab('lån')}
+                    className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                      activeTab === 'lån'
+                        ? 'border-[#16425b] text-[#16425b]'
+                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                    }`}
+                  >
+                    Mine lån ({lån.length})
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('reservasjoner')}
+                    className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                      activeTab === 'reservasjoner'
+                        ? 'border-[#16425b] text-[#16425b]'
+                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                    }`}
+                  >
+                    Reservasjoner ({reservasjoner.length})
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('påmeldinger')}
+                    className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                      activeTab === 'påmeldinger'
+                        ? 'border-[#16425b] text-[#16425b]'
+                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                    }`}
+                  >
+                    Påmeldinger ({påmeldinger.length})
+                  </button>
+                </nav>
+              </div>
+
+              <div className="p-6">
+                {/* Loans Tab */}
+                {activeTab === 'lån' && (
+                  <div>
+                    {isLoadingLoans ? (
+                      <div className="text-center py-8 text-gray-500">
+                        Laster lån...
+                      </div>
+                    ) : lån.length > 0 ? (
+                      <div className="space-y-4">{lån.map(loan => (
+                        <div key={loan.id} className={`flex items-center justify-between p-4 border rounded-lg ${
+                          isOverdue(loan.forfallsdato) ? 'border-red-300 bg-red-50' : 'border-gray-200'
                         }`}>
-                          Forfaller: {new Date(loan.forfallsdato).toLocaleDateString('nb-NO')}
-                          {isOverdue(loan.forfallsdato) && ' ⚠️ Forfalt!'}
-                        </p>
-                        {loan.fornyet > 0 && (
-                          <p className="text-xs text-gray-400 mt-1">
-                            Fornyet {loan.fornyet} {loan.fornyet === 1 ? 'gang' : 'ganger'}
-                          </p>
-                        )}
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <button 
-                          onClick={() => handleRenewLoan(loan.id)}
-                          disabled={isOverdue(loan.forfallsdato)}
-                          className="px-4 py-2 bg-[#16425b] text-white rounded-lg hover:bg-[#1a5270] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          Forny
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-500 text-center py-8">Ingen aktive lån</p>
-              )}
-            </div>
-
-            {/* Reservations */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Mine reservasjoner</h3>
-              
-              {isLoadingReservations ? (
-                <div className="text-center py-8 text-gray-500">
-                  Laster reservasjoner...
-                </div>
-              ) : reservasjoner.length > 0 ? (
-                <div className="space-y-4">
-                  {reservasjoner.map(reservation => (
-                    <div key={reservation.id} className={`flex items-center justify-between p-4 border rounded-lg ${
-                      reservation.klar ? 'border-green-300 bg-green-50' : 'border-gray-200'
-                    }`}>
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <h4 className="font-semibold text-gray-900">{reservation.bokTittel}</h4>
-                          {reservation.klar && (
-                            <span className="px-2 py-1 bg-green-500 text-white text-xs rounded-full font-medium">
-                              Klar!
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-sm text-gray-600">{reservation.forfatter}</p>
-                        <p className="text-sm text-gray-500 mt-1">
-                          📍 {reservation.filial}
-                        </p>
-                        {!reservation.klar && (
-                          <p className="text-sm text-gray-500 mt-1">
-                            Plassering i kø: <strong>#{reservation.plassering}</strong>
-                          </p>
-                        )}
-                      </div>
-                      <button className="px-4 py-2 border-2 border-gray-300 text-gray-700 rounded-lg hover:border-red-500 hover:text-red-600 transition-colors">
-                        Avbestill
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-500 text-center py-8">Ingen aktive reservasjoner</p>
-              )}
-            </div>
-
-            {/* Påmeldinger */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Mine påmeldinger</h3>
-              
-              {isLoadingPåmeldinger ? (
-                <div className="text-center py-8 text-gray-500">
-                  Laster påmeldinger...
-                </div>
-              ) : påmeldinger.length > 0 ? (
-                <div className="space-y-4">
-                  {påmeldinger.map(påmelding => {
-                    const arrangementDato = new Date(påmelding.arrangement.dato)
-                    const erPassert = arrangementDato < new Date()
-                    
-                    return (
-                      <div key={påmelding.id} className={`flex items-center justify-between p-4 border rounded-lg ${
-                        erPassert ? 'border-gray-300 bg-gray-50' : 'border-[#16425b]/20 bg-[#16425b]/5'
-                      }`}>
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-1">
-                            <h4 className="font-semibold text-gray-900">{påmelding.arrangement.tittel}</h4>
-                            {erPassert && (
-                              <span className="px-2 py-1 bg-gray-300 text-gray-700 text-xs rounded-full font-medium">
-                                Avholdt
-                              </span>
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-gray-900">{loan.bokTittel}</h4>
+                            <p className="text-sm text-gray-600">{loan.forfatter}</p>
+                            <p className="text-sm text-gray-500 mt-1">
+                              📍 {loan.filial}
+                            </p>
+                            <p className={`text-sm mt-1 ${
+                              isOverdue(loan.forfallsdato) ? 'text-red-600 font-medium' : 'text-gray-500'
+                            }`}>
+                              Forfaller: {new Date(loan.forfallsdato).toLocaleDateString('nb-NO')}
+                              {isOverdue(loan.forfallsdato) && ' ⚠️ Forfalt!'}
+                            </p>
+                            {loan.fornyet > 0 && (
+                              <p className="text-xs text-gray-400 mt-1">
+                                Fornyet {loan.fornyet} {loan.fornyet === 1 ? 'gang' : 'ganger'}
+                              </p>
                             )}
                           </div>
-                          <p className="text-sm text-gray-600 mb-2">{påmelding.arrangement.kategori}</p>
-                          <div className="space-y-1">
-                            <p className="text-sm text-gray-700">
-                              📅 {arrangementDato.toLocaleDateString('nb-NO', { 
-                                weekday: 'long', 
-                                year: 'numeric', 
-                                month: 'long', 
-                                day: 'numeric' 
-                              })}
-                            </p>
-                            <p className="text-sm text-gray-700">
-                              🕐 {påmelding.arrangement.klokkeslett}
-                            </p>
-                            <p className="text-sm text-gray-700">
-                              📍 {påmelding.arrangement.sted}
-                            </p>
-                            <p className="text-sm text-gray-700">
-                              👥 {påmelding.antallPersoner} {påmelding.antallPersoner === 1 ? 'person' : 'personer'}
-                            </p>
+                          <div className="flex items-center space-x-2">
+                            <button 
+                              onClick={() => handleRenewLoan(loan.id)}
+                              disabled={isOverdue(loan.forfallsdato)}
+                              className="px-4 py-2 bg-[#16425b] text-white rounded-lg hover:bg-[#1a5270] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              Forny
+                            </button>
                           </div>
-                          {påmelding.kommentar && (
-                            <p className="text-xs text-gray-500 mt-2 italic">
-                              Kommentar: {påmelding.kommentar}
-                            </p>
-                          )}
-                          <p className="text-xs text-gray-400 mt-2">
-                            Påmeldt: {new Date(påmelding.påmeldt).toLocaleDateString('nb-NO')}
-                          </p>
                         </div>
-                        {!erPassert && (
-                          <button 
-                            onClick={() => handleAvmeld(påmelding.id)}
-                            className="px-4 py-2 border-2 border-gray-300 text-gray-700 rounded-lg hover:border-red-500 hover:text-red-600 transition-colors"
-                          >
-                            Avmeld
-                          </button>
-                        )}
+                      ))}</div>
+                    ) : (
+                      <p className="text-gray-500 text-center py-8">Ingen aktive lån</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Reservations Tab */}
+                {activeTab === 'reservasjoner' && (
+                  <div>
+                    {isLoadingReservations ? (
+                      <div className="text-center py-8 text-gray-500">
+                        Laster reservasjoner...
                       </div>
-                    )
-                  })}
-                </div>
-              ) : (
-                <p className="text-gray-500 text-center py-8">Ingen aktive påmeldinger</p>
-              )}
+                    ) : reservasjoner.length > 0 ? (
+                      <div className="space-y-4">
+                        {reservasjoner.map(reservation => (
+                          <div key={reservation.id} className={`flex items-center justify-between p-4 border rounded-lg ${
+                            reservation.klar ? 'border-green-300 bg-green-50' : 'border-gray-200'
+                          }`}>
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2 mb-1">
+                                <h4 className="font-semibold text-gray-900">{reservation.bokTittel}</h4>
+                                {reservation.klar && (
+                                  <span className="px-2 py-1 bg-green-500 text-white text-xs rounded-full font-medium">
+                                    Klar!
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-sm text-gray-600">{reservation.forfatter}</p>
+                              <p className="text-sm text-gray-500 mt-1">
+                                📍 {reservation.filial}
+                              </p>
+                              {!reservation.klar && (
+                                <p className="text-sm text-gray-500 mt-1">
+                                  Plassering i kø: <strong>#{reservation.plassering}</strong>
+                                </p>
+                              )}
+                            </div>
+                            <button className="px-4 py-2 border-2 border-gray-300 text-gray-700 rounded-lg hover:border-red-500 hover:text-red-600 transition-colors">
+                              Avbestill
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-gray-500 text-center py-8">Ingen aktive reservasjoner</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Påmeldinger Tab */}
+                {activeTab === 'påmeldinger' && (
+                  <div>
+                    {isLoadingPåmeldinger ? (
+                      <div className="text-center py-8 text-gray-500">
+                        Laster påmeldinger...
+                      </div>
+                    ) : påmeldinger.length > 0 ? (
+                      <div className="space-y-4">
+                        {påmeldinger.map(påmelding => {
+                          const arrangementDato = new Date(påmelding.arrangement.dato)
+                          const erPassert = arrangementDato < new Date()
+                          
+                          return (
+                            <div key={påmelding.id} className={`flex items-center justify-between p-4 border rounded-lg ${
+                              erPassert ? 'border-gray-300 bg-gray-50' : 'border-[#16425b]/20 bg-[#16425b]/5'
+                            }`}>
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-2 mb-1">
+                                  <h4 className="font-semibold text-gray-900">{påmelding.arrangement.tittel}</h4>
+                                  {erPassert && (
+                                    <span className="px-2 py-1 bg-gray-300 text-gray-700 text-xs rounded-full font-medium">
+                                      Avholdt
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-sm text-gray-600 mb-2">{påmelding.arrangement.kategori}</p>
+                                <div className="space-y-1">
+                                  <p className="text-sm text-gray-700">
+                                    📅 {arrangementDato.toLocaleDateString('nb-NO', { 
+                                      weekday: 'long', 
+                                      year: 'numeric', 
+                                      month: 'long', 
+                                      day: 'numeric' 
+                                    })}
+                                  </p>
+                                  <p className="text-sm text-gray-700">
+                                    🕐 {påmelding.arrangement.klokkeslett}
+                                  </p>
+                                  <p className="text-sm text-gray-700">
+                                    📍 {påmelding.arrangement.sted}
+                                  </p>
+                                  <p className="text-sm text-gray-700">
+                                    👥 {påmelding.antallPersoner} {påmelding.antallPersoner === 1 ? 'person' : 'personer'}
+                                  </p>
+                                </div>
+                                {påmelding.kommentar && (
+                                  <p className="text-xs text-gray-500 mt-2 italic">
+                                    Kommentar: {påmelding.kommentar}
+                                  </p>
+                                )}
+                                <p className="text-xs text-gray-400 mt-2">
+                                  Påmeldt: {new Date(påmelding.påmeldt).toLocaleDateString('nb-NO')}
+                                </p>
+                              </div>
+                              {!erPassert && (
+                                <button 
+                                  onClick={() => handleAvmeld(påmelding.id)}
+                                  className="px-4 py-2 border-2 border-gray-300 text-gray-700 rounded-lg hover:border-red-500 hover:text-red-600 transition-colors"
+                                >
+                                  Avmeld
+                                </button>
+                              )}
+                            </div>
+                          )
+                        })}
+                      </div>
+                    ) : (
+                      <p className="text-gray-500 text-center py-8">Ingen aktive påmeldinger</p>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </main>
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <Toast 
+          message={toastMessage}
+          type={toastType}
+          onClose={() => setToastMessage(null)}
+        />
+      )}
     </div>
   )
 }

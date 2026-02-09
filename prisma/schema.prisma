@@ -91,17 +91,22 @@ model Artikkel {
 model Bruker {
   id                    String   @id @default(cuid())
   navn                  String
+  fornavn               String?  // Fornavn
+  etternavn             String?  // Etternavn
+  fodselsdato           DateTime? // Fødselsdato
   epost                 String?  @unique
   emailVerified         DateTime?
   image                 String?
   bibliotekkortnummer   String   @unique
   pin                   String?  // Hashed PIN-kode for innlogging
+  passord               String?  // Hashed passord
+  mobil                 String?  // Mobilnummer
   telefon               String?
   adresse               String?
   postnummer            String?
   poststed              String?
   hjemmebibliotek       String?  // "Bergen Hovedbibliotek"
-  rolle                 String   @default("BRUKER") // "BRUKER", "ADMIN", "REDAKTØR"
+  rolle                 String   @default("BRUKER") // "BRUKER", "LAANER", "ADMIN", "REDAKTØR"
   aktiv                 Boolean  @default(true)
   opprettet             DateTime @default(now())
   oppdatert             DateTime @updatedAt

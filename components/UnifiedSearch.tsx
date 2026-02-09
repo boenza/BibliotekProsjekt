@@ -117,7 +117,7 @@ export default function UnifiedSearch({
   return (
     <div ref={wrapperRef} className={`relative ${className}`}>
       <div className="relative">
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="11" cy="11" r="8"/>
             <path d="M21 21l-4.35-4.35"/>
@@ -130,7 +130,8 @@ export default function UnifiedSearch({
           onFocus={() => query.length >= 2 && setIsOpen(true)}
           placeholder={placeholder}
           autoFocus={autoFocus}
-          className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#16425b] focus:outline-none text-base transition-colors"
+          className="w-full pl-12 pr-4 py-2.5 bg-white/10 border border-white/20 rounded-lg focus:bg-white/20 focus:border-white/40 focus:outline-none placeholder-white/50 text-base font-medium transition-all"
+          style={{ color: 'white' }}
         />
         {isLoading && (
           <div className="absolute right-4 top-1/2 -translate-y-1/2">

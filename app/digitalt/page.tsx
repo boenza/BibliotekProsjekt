@@ -135,19 +135,6 @@ export default function DigitaltInnholdPage() {
           ))}
         </div>
 
-        {/* Search */}
-        <div className="mb-8">
-          <div className="max-w-2xl">
-            <input
-              type="text"
-              placeholder={`Søk i ${activeTab}...`}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-6 py-4 border-2 border-gray-200 rounded-xl focus:border-[#16425b] focus:outline-none text-lg"
-            />
-          </div>
-        </div>
-
         {/* Results count */}
         <div className="mb-6">
           <p className="text-gray-600">
