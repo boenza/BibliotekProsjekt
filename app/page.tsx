@@ -1,5 +1,6 @@
 'use client'
 
+import PersonalisertSeksjon from '@/components/PersonalisertSeksjon'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import PublicHeader from '@/components/PublicHeader'
@@ -43,6 +44,9 @@ export default function HomePage() {
       {/* Hero Section */}
       <Hero />
       
+      <PersonalisertSeksjon />
+
+
       {/* Varsler */}
       <div className="container-custom -mt-6">
         <VarselBanner />

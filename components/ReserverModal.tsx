@@ -28,6 +28,7 @@ export default function ReserverModal({ isOpen, onClose, bok, onSuccess }: Reser
 
   const filialer = [
     'Bergen hovedbibliotek',
+      'Loddefjord bibliotek',
     'Fyllingsdalen bibliotek',
     'Laksevåg bibliotek',
     'Fana bibliotek',
