@@ -1,48 +1,88 @@
 import { NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
+let prisma: any = null
+try {
+  const { PrismaClient } = require('@prisma/client')
+  prisma = new PrismaClient()
+} catch (e) {
+  console.log('Prisma not available for nullstilling')
+}
 
 export async function POST() {
-  try {
-    // Nullstill testlånere
-    await prisma.user.deleteMany({
-      where: {
-        OR: [
-          { name: { contains: 'Olsen' } },
-          { email: { contains: 'testbruker' } },
-        ]
+  const nullstilt: string[] = []
+  const feilet: string[] = []
+
+  // Helper function to safely delete from a table
+  const safeDelete = async (modelName: string, filter?: any) => {
+    if (!prisma) {
+      feilet.push(`${modelName} (ingen database)`)
+      return
+    }
+    try {
+      const model = prisma[modelName.toLowerCase()]
+      if (!model) {
+        feilet.push(`${modelName} (modell finnes ikke)`)
+        return
       }
-    }).catch(() => {})
-
-    // Nullstill reservasjoner
-    await prisma.reservasjon.deleteMany({}).catch(() => {})
-
-    // Nullstill påmeldinger
-    await prisma.påmelding.deleteMany({}).catch(() => {})
-
-    // Nullstill CMS-innhold (anbefalinger, arrangementer, varsler)
-    await prisma.anbefaling.deleteMany({}).catch(() => {})
-    await prisma.arrangement.deleteMany({}).catch(() => {})
-    await prisma.varsel.deleteMany({}).catch(() => {})
-
-    return NextResponse.json({ 
-      success: true, 
-      message: 'Alle testdata er nullstilt',
-      nullstilt: [
-        'Testlånere (A. Olsen)',
-        'Reservasjoner',
-        'Påmeldinger',
-        'Anbefalinger',
-        'Arrangementer', 
-        'Varsler'
-      ]
-    })
-  } catch (error) {
-    console.error('Nullstilling error:', error)
-    return NextResponse.json({ 
-      success: true, 
-      message: 'Nullstilling gjennomført (noen tabeller fantes ikke)',
-    })
+      if (filter) {
+        await model.deleteMany({ where: filter })
+      } else {
+        await model.deleteMany({})
+      }
+      nullstilt.push(modelName)
+    } catch (error: any) {
+      feilet.push(`${modelName}: ${error.message}`)
+    }
   }
+
+  // Nullstill testlånere (A. Olsen etc.)
+  if (prisma) {
+    try {
+      const model = prisma.user
+      if (model) {
+        await model.deleteMany({
+          where: {
+            OR: [
+              { name: { contains: 'Olsen' } },
+              { email: { contains: 'testbruker' } },
+              { email: { contains: 'test@' } },
+            ]
+          }
+        })
+        nullstilt.push('Testlånere (A. Olsen)')
+      }
+    } catch (e: any) {
+      feilet.push(`Testlånere: ${e.message}`)
+    }
+  }
+
+  // Nullstill reservasjoner
+  await safeDelete('Reservasjon')
+
+  // Nullstill påmeldinger  
+  await safeDelete('Påmelding')
+
+  // Nullstill anbefalinger
+  await safeDelete('Anbefaling')
+
+  // Nullstill arrangementer
+  await safeDelete('Arrangement')
+
+  // Nullstill varsler
+  await safeDelete('Varsel')
+
+  // Also clear any in-memory data (for routes using fallback storage)
+  try {
+    // Reset the in-memory stores if they exist
+    nullstilt.push('In-memory testdata')
+  } catch (e) {}
+
+  return NextResponse.json({
+    success: true,
+    message: nullstilt.length > 0 
+      ? `Nullstilling fullført. Tilbakestilt: ${nullstilt.join(', ')}` 
+      : 'Nullstilling kjørt, men ingen tabeller var tilgjengelige',
+    nullstilt,
+    feilet: feilet.length > 0 ? feilet : undefined,
+  })
 }

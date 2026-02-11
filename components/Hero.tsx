@@ -22,7 +22,7 @@ export default function Hero() {
             letterSpacing: '-0.02em'
           }}
         >
-          Velkommen til Bergen Bibliotek
+          Bergen Offentlige Bibliotek
         </h1>
         
         <p className="text-lg md:text-xl opacity-90 mb-8 max-w-2xl mx-auto">
@@ -36,7 +36,7 @@ export default function Hero() {
             className="inline-flex items-center gap-2 px-6 py-3 bg-white text-[#16425b] rounded-lg font-semibold hover:bg-gray-50 transition-all hover:scale-105 shadow-lg"
           >
             <span>🔍</span>
-            Utforsk katalogen
+            Utforsk samlingen
           </Link>
           
           <Link

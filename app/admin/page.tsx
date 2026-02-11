@@ -1,8 +1,13 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 
 export default function AdminDashboard() {
+  const [isNullstilling, setIsNullstilling] = useState(false)
+  const [nullstillResult, setNullstillResult] = useState<string | null>(null)
+  const [showNullstillConfirm, setShowNullstillConfirm] = useState(false)
+
   const stats = [
     { name: 'Publiserte anbefalinger', value: '127', change: '+12%', icon: '⭐' },
     { name: 'Kommende arrangementer', value: '23', change: '+5', icon: '📅' },
@@ -17,6 +22,31 @@ export default function AdminDashboard() {
     { action: 'Arrangement publisert', item: 'Kodeklubb for ungdom', user: 'Erik Svendsen', time: '3 timer siden' },
   ]
 
+  const handleNullstill = async () => {
+    setIsNullstilling(true)
+    setNullstillResult(null)
+
+    try {
+      const response = await fetch('/api/nullstill', {
+        method: 'POST',
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setNullstillResult('Nullstilling fullført! Alle testdata er tilbakestilt.')
+      } else {
+        setNullstillResult('Nullstilling delvis fullført: ' + (data.message || 'Noen elementer ble ikke funnet'))
+      }
+    } catch (error) {
+      console.error('Nullstilling error:', error)
+      setNullstillResult('Feil ved nullstilling. Sjekk konsollen.')
+    } finally {
+      setIsNullstilling(false)
+      setShowNullstillConfirm(false)
+    }
+  }
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -24,12 +54,14 @@ export default function AdminDashboard() {
           <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
           <p className="mt-2 text-gray-600">Velkommen tilbake! Her er en oversikt over bibliotekets aktivitet.</p>
         </div>
-        <Link 
-          href="/katalog"
-          className="px-4 py-2 bg-[#10b981] text-white rounded-lg hover:bg-[#059669] transition-colors"
-        >
-          Se nettside →
-        </Link>
+        <div className="flex items-center space-x-3">
+          <Link 
+            href="/katalog"
+            className="px-4 py-2 bg-[#10b981] text-white rounded-lg hover:bg-[#059669] transition-colors"
+          >
+            Se nettside →
+          </Link>
+        </div>
       </div>
 
       {/* Stats */}
@@ -107,6 +139,73 @@ export default function AdminDashboard() {
             </Link>
           </div>
         </div>
+      </div>
+
+      {/* Nullstilling for brukertest */}
+      <div className="bg-red-50 rounded-xl shadow-sm p-6 border border-red-200">
+        <div className="flex items-start justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-red-900 flex items-center space-x-2">
+              <span>🔄</span>
+              <span>Nullstilling — testmiljø</span>
+            </h3>
+            <p className="mt-2 text-sm text-red-700">
+              Tilbakestill testmiljøet mellom brukertester. Dette sletter alle testlånere (A. Olsen), 
+              reservasjoner, påmeldinger, anbefalinger, arrangementer og varsler opprettet under test.
+            </p>
+            <div className="mt-3 text-xs text-red-600 space-y-1">
+              <p>Nullstilling sletter:</p>
+              <ul className="list-disc list-inside space-y-0.5 ml-2">
+                <li>Testlånere (A. Olsen og testbrukere)</li>
+                <li>Reservasjoner gjort i testen</li>
+                <li>Påmeldinger til arrangementer</li>
+                <li>Anbefalinger opprettet i CMS</li>
+                <li>Arrangementer opprettet i CMS</li>
+                <li>Varsler opprettet i CMS</li>
+              </ul>
+            </div>
+          </div>
+          <div className="flex-shrink-0 ml-6">
+            {!showNullstillConfirm ? (
+              <button
+                onClick={() => setShowNullstillConfirm(true)}
+                className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+              >
+                🔄 Nullstill testmiljø
+              </button>
+            ) : (
+              <div className="text-right space-y-2">
+                <p className="text-sm font-medium text-red-800">Er du sikker?</p>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={handleNullstill}
+                    disabled={isNullstilling}
+                    className="px-5 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 transition-colors font-medium disabled:opacity-50"
+                  >
+                    {isNullstilling ? '⏳ Nullstiller...' : '✓ Ja, nullstill'}
+                  </button>
+                  <button
+                    onClick={() => setShowNullstillConfirm(false)}
+                    className="px-5 py-2 bg-white text-red-700 border border-red-300 rounded-lg hover:bg-red-50 transition-colors font-medium"
+                  >
+                    Avbryt
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Resultat */}
+        {nullstillResult && (
+          <div className={`mt-4 p-3 rounded-lg text-sm font-medium ${
+            nullstillResult.includes('fullført') 
+              ? 'bg-green-100 text-green-800 border border-green-200' 
+              : 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+          }`}>
+            {nullstillResult}
+          </div>
+        )}
       </div>
     </div>
   )

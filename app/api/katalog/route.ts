@@ -139,6 +139,7 @@ const katalogBøker = [
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const q = searchParams.get('q')
+  const sjanger = searchParams.get('sjanger')
   const filial = searchParams.get('filial')
   const språk = searchParams.get('språk')
   const format = searchParams.get('format')
@@ -162,6 +163,11 @@ export async function GET(request: NextRequest) {
       (bok.isbn && bok.isbn.includes(lower)) ||
       bok.sjanger.toLowerCase().includes(lower)
     )
+  }
+
+  // Sjanger-filter (FIKSET!)
+  if (sjanger && sjanger !== 'Alle') {
+    resultater = resultater.filter(bok => bok.sjanger === sjanger)
   }
 
   // Filial-filter
