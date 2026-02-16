@@ -1,0 +1,60 @@
+{
+  "name": "Bergen Bibliotek",
+  "short_name": "Biblioteket",
+  "description": "Din digitale portal til Bergen Bibliotek — lån, arrangementer og digitalt innhold",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fdfcfa",
+  "theme_color": "#0f3d54",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "no",
+  "categories": ["books", "education", "lifestyle"],
+  "icons": [
+    {
+      "src": "/images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/images/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Søk i katalogen",
+      "short_name": "Katalog",
+      "url": "/katalog",
+      "icons": []
+    },
+    {
+      "name": "Mine lån",
+      "short_name": "Min side",
+      "url": "/min-side",
+      "icons": []
+    },
+    {
+      "name": "Arrangementer",
+      "short_name": "Events",
+      "url": "/arrangementer",
+      "icons": []
+    }
+  ]
+}

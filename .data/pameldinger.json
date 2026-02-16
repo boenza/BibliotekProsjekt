@@ -1,0 +1,62 @@
+[
+  {
+    "id": "pam-1770830006135",
+    "brukerId": "demo-user-1",
+    "arrangementId": "arr-1770820427581",
+    "navn": "Demo Bruker",
+    "epost": "demo@bergen.bibliotek.no",
+    "antallPersoner": 1,
+    "kommentar": null,
+    "påmeldt": "2026-02-11T17:13:26.135Z"
+  },
+  {
+    "id": "pam-1770833387602",
+    "brukerId": "demo-user-1",
+    "arrangementId": "arr-1770806233958",
+    "navn": "Demo Bruker",
+    "epost": "demo@bergen.bibliotek.no",
+    "antallPersoner": 1,
+    "kommentar": null,
+    "påmeldt": "2026-02-11T18:09:47.602Z"
+  },
+  {
+    "id": "pam-1770991091056",
+    "brukerId": "demo-user-1",
+    "arrangementId": "arr-2",
+    "navn": "Demo Bruker",
+    "epost": "demo@bergen.bibliotek.no",
+    "antallPersoner": 1,
+    "kommentar": null,
+    "påmeldt": "2026-02-13T13:58:11.056Z"
+  },
+  {
+    "id": "pam-1770991098903",
+    "brukerId": "demo-user-1",
+    "arrangementId": "arr-4",
+    "navn": "Demo Bruker",
+    "epost": "demo@bergen.bibliotek.no",
+    "antallPersoner": 3,
+    "kommentar": null,
+    "påmeldt": "2026-02-13T13:58:18.903Z"
+  },
+  {
+    "id": "pam-1771062825024",
+    "brukerId": "demo-user-1",
+    "arrangementId": "arr-1770991532511",
+    "navn": "Demo Bruker",
+    "epost": "demo@bergen.bibliotek.no",
+    "antallPersoner": 1,
+    "kommentar": null,
+    "påmeldt": "2026-02-14T09:53:45.024Z"
+  },
+  {
+    "id": "pam-1771102578654",
+    "brukerId": "demo-user-1",
+    "arrangementId": "arr-1771090396672",
+    "navn": "Demo Bruker",
+    "epost": "demo@bergen.bibliotek.no",
+    "antallPersoner": 1,
+    "kommentar": null,
+    "påmeldt": "2026-02-14T20:56:18.654Z"
+  }
+]

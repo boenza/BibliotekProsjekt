@@ -1,0 +1,201 @@
+[
+  {
+    "id": "anb-1",
+    "type": "enkel",
+    "tittel": "Dei sju dorene",
+    "forfatter": "Agnes Ravatn",
+    "beskrivelse": "Ein hypnotisk roman om ei kvinne som kjoper eit gamalt hus ved Hardangerfjorden og oppdagar hemmelege rom og ei mork fortid. Ravatn skriv med ein spenning som held deg fast fraa forste til siste side.",
+    "bildeUrl": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400",
+    "publisert": true,
+    "opprettet": "2026-01-15T10:00:00Z",
+    "katalogId": "bok-1"
+  },
+  {
+    "id": "anb-2",
+    "type": "enkel",
+    "tittel": "Bergens hemmeligheter",
+    "forfatter": "Gunnar Staalesen",
+    "beskrivelse": "Staalesen tar oss med paa ein rundtur i Bergen vi ikkje visste eksisterte. Fraa dei skjulte smugene i Sandviken til dei loynde tunnelane under Bryggen.",
+    "bildeUrl": "https://images.unsplash.com/photo-1524578271613-d550eacf6090?w=400",
+    "publisert": true,
+    "opprettet": "2026-01-20T14:30:00Z",
+    "katalogId": null
+  },
+  {
+    "id": "anb-3",
+    "type": "enkel",
+    "tittel": "Fuglane",
+    "forfatter": "Tarjei Vesaas",
+    "beskrivelse": "Ein tidlaus norsk klassikar om Mattis og Hege. Vesaas sitt poetiske spraak gjer dette til ei heilt unik leseopplevving.",
+    "bildeUrl": "https://bergenbibliotek.no/litteraturen/til-kjernen/kjerneboker/vesaas-tarjei-fuglane-1957/@@download/image/8044639410_c825a67089.jpg",
+    "publisert": true,
+    "opprettet": "2026-02-01T09:00:00Z",
+    "katalogId": null
+  },
+  {
+    "id": "anb-samling-1",
+    "type": "samling",
+    "tittel": "Lesetips til 1. og 2. klasse",
+    "forfatter": null,
+    "beskrivelse": "Vaar bibliotekar Maria har plukka ut dei beste boekene for dei yngste lesarane. Perfekt for hogtlesing og forstegongslesarar!",
+    "bildeUrl": "https://images.unsplash.com/photo-1476275466078-4007374efbbe?w=400",
+    "publisert": true,
+    "opprettet": "2026-02-05T10:00:00Z",
+    "katalogId": null,
+    "titler": [
+      {
+        "id": "st-1",
+        "tittel": "Karius og Baktus",
+        "forfatter": "Thorbjorn Egner",
+        "bildeUrl": null,
+        "kommentar": "Tidlaus klassikar som barna elskar",
+        "katalogId": null
+      },
+      {
+        "id": "st-2",
+        "tittel": "Dyrene i Hakkebakkeskogen",
+        "forfatter": "Thorbjorn Egner",
+        "bildeUrl": null,
+        "kommentar": "Fantastisk for hogtlesing",
+        "katalogId": null
+      },
+      {
+        "id": "st-3",
+        "tittel": "Kubbe lager museum",
+        "forfatter": "Ashild Kanstad Johnsen",
+        "bildeUrl": null,
+        "kommentar": "Nydelig illustrert",
+        "katalogId": null
+      },
+      {
+        "id": "st-4",
+        "tittel": "Snill",
+        "forfatter": "Gro Dahle",
+        "bildeUrl": null,
+        "kommentar": "Viktig tematikk for smaa barn",
+        "katalogId": null
+      }
+    ]
+  },
+  {
+    "id": "anb-samling-2",
+    "type": "samling",
+    "tittel": "Paaskekrimtips 2026",
+    "forfatter": null,
+    "beskrivelse": "Fem spenningsboeker som passar perfekt til paaskeferien. Fraa norsk noir til internasjonal thriller.",
+    "bildeUrl": "https://images.unsplash.com/photo-1476275466078-4007374efbbe?w=400",
+    "publisert": false,
+    "opprettet": "2026-02-08T16:00:00Z",
+    "katalogId": null,
+    "titler": [
+      {
+        "id": "st-5",
+        "tittel": "Blodmaane",
+        "forfatter": "Jo Nesbo",
+        "bildeUrl": null,
+        "kommentar": "Harry Hole er tilbake",
+        "katalogId": null
+      },
+      {
+        "id": "st-6",
+        "tittel": "Hvit, heit ild",
+        "forfatter": "John Ajvide Lindqvist",
+        "bildeUrl": null,
+        "kommentar": "Skandinavisk grøssar paa sitt beste",
+        "katalogId": null
+      },
+      {
+        "id": "st-7",
+        "tittel": "Brent jord",
+        "forfatter": "Jorn Lier Horst",
+        "bildeUrl": null,
+        "kommentar": "Wisting-serien held koken",
+        "katalogId": null
+      }
+    ]
+  },
+  {
+    "id": "anb-1770806069585",
+    "type": "samling",
+    "tittel": "Klassikere du må lese",
+    "forfatter": null,
+    "beskrivelse": "Leter du etter klassiske bøker? Her har vi samlet bøker, både fra norge og internasjonale forfattere, som alle bør lese på et tidspunkt i livet! Benytt anledningen til å vekke lesegleden din til live med denne inspirerende listen over klassikse bøker og romaner alle bør lese!",
+    "bildeUrl": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1200",
+    "publisert": true,
+    "opprettet": "2026-02-11T10:34:29.585Z",
+    "katalogId": null,
+    "titler": [
+      {
+        "id": "st-1770805635648",
+        "tittel": "Brødrene Karamasov",
+        "forfatter": "Fjodor Dostojevskij",
+        "bildeUrl": "https://media.aja.bs.no/97f1f0e2-8b24-4ac7-b8a4-14b860894573/original.jpg",
+        "kommentar": "",
+        "katalogId": null
+      },
+      {
+        "id": "st-1770805908600",
+        "tittel": "På sporet av den tapte tid",
+        "forfatter": "Marcel Proust",
+        "bildeUrl": "https://www.bokklubben.no/servlet/VisBildeServlet?produktId=9958206&width=800",
+        "kommentar": "",
+        "katalogId": null
+      }
+    ]
+  },
+  {
+    "id": "anb-1770811513662",
+    "type": "enkel",
+    "tittel": "Bøkene som endret alt — leseliste for voksne",
+    "forfatter": "Diverse",
+    "beskrivelse": "Kuratert leseliste med bøker som har satt varig spor.",
+    "bildeUrl": "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800",
+    "publisert": true,
+    "opprettet": "2026-02-11T12:05:13.662Z",
+    "katalogId": null
+  },
+  {
+    "id": "anb-1770812044589",
+    "type": "enkel",
+    "tittel": "Fuglane",
+    "forfatter": "Tarjei Vesaas",
+    "beskrivelse": "Bra bok",
+    "bildeUrl": "https://bergenbibliotek.no/litteraturen/til-kjernen/kjerneboker/vesaas-tarjei-fuglane-1957/@@download/image/8044639410_c825a67089.jpg",
+    "publisert": true,
+    "opprettet": "2026-02-11T12:14:04.589Z",
+    "katalogId": null
+  },
+  {
+    "id": "anb-1770820261241",
+    "type": "enkel",
+    "tittel": "Fugletribunalet",
+    "forfatter": "Agnes Ravatn",
+    "beskrivelse": "“Fugletribunalet” av Agnes Ravatn er en uforglemmelig roman som fanger leseren fra første side. Handlingen utspiller seg i et avsidesliggende hus ved kysten av Norge, hvor vi møter Allis, en kvinne som har trukket seg tilbake fra en hektisk tilværelse for å finne ro og refleksjon. Men i stedet for fred, blir hun dratt inn i et komplisert nett av hemmeligheter og intriger som omgir de lokale innbyggerne.\n\nRavatns språk er både poetisk og presist, og hun skaper en atmosfære som får deg til å føle deg som en del av historien. Boken tar opp temaer som identitet, tap og menneskelige relasjoner, noe som gjør den relevant for alle som har kjent på følelsen av å være fremmed eller alene.\n\n“Fugletribunalet” passer perfekt for lesere som liker dyptgående karakterstudier og en lett mystisk stemning. Ta deg tid til å bli kjent med Allis og hennes verden – dette er en bok du ikke vil angre på å låne!",
+    "bildeUrl": "https://samlaget.no/cdn/shop/files/YEMCbnQJKKzThZOKWk1hT5ttrvO5GWwXUEY5NpGF.jpg?v=1716510938&width=289",
+    "publisert": true,
+    "opprettet": "2026-02-11T14:31:01.241Z",
+    "katalogId": "bok-002"
+  },
+  {
+    "id": "anb-1770977104067",
+    "type": "enkel",
+    "tittel": "Doppler",
+    "forfatter": "Erlend Loe",
+    "beskrivelse": "I \"Doppler\" av Erlend Loe møter vi Andreas Doppler, en mann som i en midtlivskrise trekker seg tilbake til skogen etter å ha fått nok av det moderne samfunnet. Boken er en tankevekkende og humoristisk reise som tar oss med på en uventet utforskning av livet, meningen med tilværelsen og hva det vil si å være menneske. \n\nLoe skriver med en letthet som gjør det enkelt å le av Dopplers absurde situasjoner, samtidig som han gir oss rom for refleksjon. Gjennom Dopplers møter med både mennesker og dyr, stilles spørsmål ved samfunnets forventninger og krav. \n\n\"Doppler\" passer perfekt for deg som liker bøker med en dose humor og filosofi. Den er lett tilgjengelig, men samtidig dyp nok til å gi deg noe å tenke på lenge etter at du har lest ferdig. \n\nSå hvis du er klar for å bli kjent med en karakter som tar sine egne valg på en uvanlig måte, kom til Bergen Offentlige Bibliotek og lån \"Doppler\". Du vil ikke angre!",
+    "bildeUrl": "https://cdn.sanity.io/images/51m7t5gw/production/2dd364b7d1dd7ed1ff2832cf2152c334b278b09e-1535x2421.jpg?w=640&fm=webp",
+    "publisert": true,
+    "opprettet": "2026-02-13T10:05:04.067Z",
+    "katalogId": "bok-005"
+  },
+  {
+    "id": "anb-1771090200739",
+    "type": "enkel",
+    "tittel": "Operasjon Sjølvdisiplin",
+    "forfatter": "Agnes Ravatn",
+    "beskrivelse": "\"Operasjon Sjølvdisiplin\" av Agnes Ravatn er en spennende og tankevekkende bok som får leseren til å tenke over hverdagslivets utfordringer. Ravatn skriver med en varm og humoristisk tone som gjør at man både kan le og kjenne seg igjen i situasjonene hun beskriver.\n\nBoken tar oss med på en reise der forfatteren utforsker selvdisiplin og hvordan det påvirker livene våre. Gjennom personlige historier og kloke observasjoner viser hun at det å finne balanse i hverdagen ikke alltid er enkelt, men at det er en reise verdt å ta.\n\nDenne boken passer for alle som ønsker å forbedre seg selv, enten du søker motivasjon eller bare vil ha en god latter. Ravatn inviterer deg inn i sitt univers med et glimt i øyet, og du vil garantert kjenne deg igjen i hennes erfaringer. Lån \"Operasjon Sjølvdisiplin\" hos Bergen Offentlige Bibliotek, og la deg inspirere til å ta tak i din egen hverdag!",
+    "bildeUrl": "https://samlaget.no/cdn/shop/files/6uglBvFkKtZugBg3mIdK6TPB6Y6NnE57VZZC7Mlw.jpg?v=1716511892&width=1200",
+    "publisert": true,
+    "opprettet": "2026-02-14T17:30:00.739Z",
+    "katalogId": "bok-003"
+  }
+]

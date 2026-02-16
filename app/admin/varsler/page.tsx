@@ -15,6 +15,28 @@ interface Varsel {
   opprettet: string
 }
 
+/* ───── SVG Icons ───── */
+const ic = {
+  info: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>,
+  warning: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4M12 17h.01"/></svg>,
+  alert: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>,
+  plus: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg>,
+}
+
+/** Maps varsel type to its SVG icon */
+const TYPE_ICON: Record<string, JSX.Element> = {
+  info: ic.info,
+  advarsel: ic.warning,
+  viktig: ic.alert,
+}
+
+/** Maps varsel type to the icon key stored in DB (replaces emoji storage) */
+const TYPE_ICON_KEY: Record<string, string> = {
+  info: 'info',
+  advarsel: 'warning',
+  viktig: 'alert',
+}
+
 export default function VarslerPage() {
   const [varsler, setVarsler] = useState<Varsel[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -22,7 +44,7 @@ export default function VarslerPage() {
   const [tittel, setTittel] = useState('')
   const [melding, setMelding] = useState('')
   const [type, setType] = useState('info')
-  const [ikon, setIkon] = useState('ℹ️')
+  const [ikon, setIkon] = useState('info')
   const [visningStart, setVisningStart] = useState('')
   const [visningSlutt, setVisningSlutt] = useState('')
   const [isSaving, setIsSaving] = useState(false)
@@ -71,15 +93,15 @@ export default function VarslerPage() {
         setTittel('')
         setMelding('')
         setType('info')
-        setIkon('ℹ️')
+        setIkon('info')
         setVisningStart('')
         setVisningSlutt('')
         setShowNewForm(false)
-        
+
         setToastMessage('Varsel opprettet!')
         setShowToast(true)
         setTimeout(() => setShowToast(false), 3000)
-        
+
         await fetchVarsler()
       } else {
         alert('Kunne ikke opprette varsel')
@@ -106,7 +128,7 @@ export default function VarslerPage() {
         setToastMessage('Varsel slettet!')
         setShowToast(true)
         setTimeout(() => setShowToast(false), 3000)
-        
+
         await fetchVarsler()
       } else {
         alert('Kunne ikke slette varsel')
@@ -131,6 +153,13 @@ export default function VarslerPage() {
     }
   }
 
+  /** Render icon for a varsel — supports both new SVG keys and legacy emoji */
+  const renderVarselIcon = (iconValue: string) => {
+    if (TYPE_ICON[iconValue]) return TYPE_ICON[iconValue]
+    // Fallback for legacy emoji values — show info icon
+    return ic.info
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -150,7 +179,7 @@ export default function VarslerPage() {
       {showNewForm && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h2 className="text-xl font-bold text-gray-900 mb-6">Opprett nytt varsel</h2>
-          
+
           <div className="grid grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -173,9 +202,7 @@ export default function VarslerPage() {
                 value={type}
                 onChange={(e) => {
                   setType(e.target.value)
-                  if (e.target.value === 'info') setIkon('ℹ️')
-                  else if (e.target.value === 'advarsel') setIkon('⚠️')
-                  else if (e.target.value === 'viktig') setIkon('🚨')
+                  setIkon(TYPE_ICON_KEY[e.target.value] || 'info')
                 }}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#16425b] focus:border-transparent"
               >
@@ -267,7 +294,7 @@ export default function VarslerPage() {
                 <tr key={varsel.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">
                     <div className="flex items-center space-x-3">
-                      <span className="text-2xl">{varsel.ikon}</span>
+                      <span className="text-gray-500">{renderVarselIcon(varsel.ikon)}</span>
                       <div>
                         <div className="font-medium text-gray-900">{varsel.tittel}</div>
                         <div className="text-sm text-gray-500">{varsel.melding}</div>

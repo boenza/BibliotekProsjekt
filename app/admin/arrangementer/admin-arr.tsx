@@ -16,6 +16,15 @@ interface Arrangement {
   opprettet: string
 }
 
+/* ───── SVG Icons ───── */
+const ic = {
+  sparkle: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>,
+  bulb: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6M10 22h4"/></svg>,
+  info: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>,
+  camera: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>,
+  copy: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>,
+}
+
 export default function ArrangementerPage() {
   const [showNewForm, setShowNewForm] = useState(false)
   const [title, setTitle] = useState('')
@@ -300,7 +309,7 @@ export default function ArrangementerPage() {
                   disabled={isGenerating}
                   className="px-4 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2 disabled:opacity-50"
                 >
-                  <span>✨</span>
+                  {ic.sparkle}
                   <span>{isGenerating ? 'Genererer...' : 'AI-hjelp'}</span>
                 </button>
               </div>
@@ -311,8 +320,8 @@ export default function ArrangementerPage() {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#16425b] focus:border-transparent"
                 placeholder="Beskriv arrangementet..."
               />
-              <p className="mt-2 text-sm text-gray-500">
-                💡 Tips: Fortell hva deltakerne vil oppleve og hvem arrangementet passer for.
+              <p className="mt-2 text-sm text-gray-500 flex items-center gap-1">
+                {ic.bulb} Tips: Fortell hva deltakerne vil oppleve og hvem arrangementet passer for.
               </p>
             </div>
 
@@ -320,7 +329,7 @@ export default function ArrangementerPage() {
             {aiSuggestion && (
               <div className="col-span-2 bg-purple-50 border border-purple-200 rounded-lg p-4">
                 <div className="flex items-start space-x-2">
-                  <span className="text-purple-600">✨</span>
+                  <span className="text-purple-600">{ic.sparkle}</span>
                   <div className="flex-1">
                     <p className="text-sm font-medium text-purple-900 mb-2">AI-forslag:</p>
                     <p className="text-sm text-purple-800">{aiSuggestion}</p>
@@ -329,7 +338,7 @@ export default function ArrangementerPage() {
                       onClick={() => setDescription(aiSuggestion)}
                       className="mt-3 text-sm text-purple-600 hover:text-purple-800 font-medium"
                     >
-                      Bruk dette forslaget →
+                      Bruk dette forslaget &rarr;
                     </button>
                   </div>
                 </div>
@@ -341,7 +350,7 @@ export default function ArrangementerPage() {
                 Arrangementsbilde
               </label>
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-[#16425b] transition-colors cursor-pointer">
-                <div className="text-4xl mb-2">📸</div>
+                <div className="flex justify-center mb-2 text-gray-400">{ic.camera}</div>
                 <p className="text-sm text-gray-600">Klikk for å laste opp bilde</p>
                 <p className="text-xs text-gray-500 mt-1">eller dra og slipp her</p>
               </div>
@@ -349,7 +358,7 @@ export default function ArrangementerPage() {
 
             <div className="col-span-2 bg-blue-50 border border-blue-200 rounded-lg p-4">
               <div className="flex items-start space-x-2">
-                <span className="text-blue-600">ℹ️</span>
+                <span className="text-blue-600">{ic.info}</span>
                 <div className="flex-1 text-sm text-blue-900">
                   <p className="font-medium mb-1">Tilgjengelighet</p>
                   <div className="space-y-2 mt-2">
@@ -450,10 +459,10 @@ export default function ArrangementerPage() {
                   <td className="px-6 py-4 text-right">
                     <button 
                       onClick={() => handleDuplicate(arr)}
-                      className="text-blue-600 hover:text-blue-800 font-medium text-sm mr-4"
+                      className="text-blue-600 hover:text-blue-800 font-medium text-sm mr-4 inline-flex items-center gap-1"
                       title="Dupliser arrangement"
                     >
-                      📋 Dupliser
+                      {ic.copy} Dupliser
                     </button>
                     <button className="text-[#16425b] hover:text-[#1a5270] font-medium text-sm mr-4">
                       Rediger

@@ -1,0 +1,56 @@
+[
+  {
+    "id": "delt-1",
+    "kildeId": "bodo-arr-42",
+    "kildeBibliotek": "Bodø bibliotek",
+    "type": "arrangement",
+    "tittel": "Nordnorsk forfatterfestival — gjestende foredragsholder",
+    "data": {
+      "beskrivelse": "Foredrag om nordnorsk litteratur med paneldebatt. Kan tilpasses lokale forhold.",
+      "dato": "2026-04-10",
+      "klokkeslett": "18:00",
+      "sted": "",
+      "kategori": "Foredrag",
+      "bildeUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200"
+    },
+    "status": "importert",
+    "opprettetSomId": "arr-1770820646111",
+    "mottatt": "2026-02-08T10:30:00Z",
+    "behandlet": "2026-02-11T14:37:26.129Z"
+  },
+  {
+    "id": "delt-2",
+    "kildeId": "stavanger-anb-7",
+    "kildeBibliotek": "Stavanger bibliotek",
+    "type": "anbefaling",
+    "tittel": "Bøkene som endret alt — leseliste for voksne",
+    "data": {
+      "type": "enkel",
+      "beskrivelse": "Kuratert leseliste med bøker som har satt varig spor.",
+      "forfatter": "Diverse",
+      "bildeUrl": "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800"
+    },
+    "status": "importert",
+    "opprettetSomId": "anb-1770811513662",
+    "mottatt": "2026-02-09T14:15:00Z",
+    "behandlet": "2026-02-11T12:05:13.671Z"
+  },
+  {
+    "id": "delt-3",
+    "kildeId": "tromsoe-art-12",
+    "kildeBibliotek": "Tromsø bibliotek",
+    "type": "artikkel",
+    "tittel": "Slik lykkes du med leselyst-kampanjen",
+    "data": {
+      "ingress": "Erfaringer fra Tromsøs vellykkede kampanje for barn 6-12 år.",
+      "innhold": "Tromsø bibliotek gjennomførte i 2025 en leselyst-kampanje rettet mot barn i alderen 6-12 år.\n\nKampanjen varte i tre måneder og resulterte i en økning på 40% i barneutlån.",
+      "kategori": "Tips",
+      "forfatter": "Tromsø bibliotek",
+      "bildeUrl": "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=1200"
+    },
+    "status": "importert",
+    "opprettetSomId": "art-1770811590783",
+    "mottatt": "2026-02-10T09:00:00Z",
+    "behandlet": "2026-02-11T12:06:30.812Z"
+  }
+]
