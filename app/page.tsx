@@ -400,7 +400,7 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold" style={{ fontFamily: 'var(--font-display)', color: 'var(--ink)' }}>
-                  Bli medlem — helt gratis
+                  Bli låner
                 </h3>
               </div>
               <p className="text-sm leading-relaxed mb-5" style={{ color: 'var(--ink-soft)' }}>

@@ -76,13 +76,22 @@ export default function KatalogPage() {
   const getTotalTilgjengelig = (book: Book) => book.tilgjengelighet?.reduce((sum, t) => sum + t.antall, 0) || 0
   const harDigitalFormat = (book: Book) => book.formater?.some(f => f === 'E-bok' || f === 'Lydbok')
 
-  const handleReserver = (book: Book) => { setSelectedBook(book); setShowReserverModal(true) }
+  /* ── FIX: Both list "Bestill" and detail "Bestill" now go through detail modal first ── */
   const handleShowDetail = (book: Book) => {
     setDetailBook(book)
     setDetailSpråk(book.språk?.[0] || '')
     setDetailFormat(null)
     setShowDetailModal(true)
   }
+
+  /* ── Opens ReserverModal with language/format pre-selected from detail ── */
+  const handleReserverFromDetail = () => {
+    if (!detailBook) return
+    setSelectedBook(detailBook)
+    setShowDetailModal(false)
+    setShowReserverModal(true)
+  }
+
   const handleReservasjonSuccess = () => {
     setSuccessMessage('Reservasjon opprettet! Se den på Min side.')
     setTimeout(() => setSuccessMessage(''), 5000)
@@ -257,7 +266,6 @@ export default function KatalogPage() {
                               {formatIkon[f] || formatIkon['Bok']} {f}
                             </span>
                           ))}
-                          {/* Språk badge i søkeresultat */}
                           {book.språk && book.språk.length > 1 && (
                             <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium"
                               style={{ background: 'rgba(15,61,84,0.04)', color: 'var(--ink-muted)' }}>
@@ -271,7 +279,7 @@ export default function KatalogPage() {
                         )}
                       </div>
 
-                      {/* Status + buttons */}
+                      {/* Status + buttons — FIX: Bestill opens detail modal (same as clicking card) */}
                       <div className="flex items-center gap-2 sm:flex-col sm:items-end sm:gap-2 flex-shrink-0">
                         <span className="text-xs font-medium px-3 py-1 rounded-full"
                           style={{
@@ -281,7 +289,8 @@ export default function KatalogPage() {
                           {tilgjengelig > 0 ? `${tilgjengelig} ledig` : 'Utlånt'}
                         </span>
                         <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-                          <button onClick={() => handleReserver(book)}
+                          {/* FIX: Opens detail modal so user can choose language/format first */}
+                          <button onClick={() => handleShowDetail(book)}
                             className="px-4 py-2 rounded-lg text-sm font-medium transition-all hover:scale-[1.02]"
                             style={{
                               background: tilgjengelig > 0 ? 'var(--ocean)' : 'var(--mist, #f0f4f7)',
@@ -434,7 +443,7 @@ export default function KatalogPage() {
                     {filteredEksemplarer.length > 0 ? filteredEksemplarer.map((e, i) => (
                       <div key={`${e.filial}-${e.format}-${e.språk}-${i}`} className="flex items-center justify-between p-3 rounded-xl" style={{ background: 'var(--mist)' }}>
                         <div className="flex items-center gap-3 flex-1 min-w-0">
-                          {e.filial === 'Digitalt' ? (
+                          {e.filial.startsWith('Digitalt') ? (
                             <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                               style={{ background: 'rgba(15,61,84,0.08)' }}>
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ocean)" strokeWidth="1.8">
@@ -460,9 +469,9 @@ export default function KatalogPage() {
                               background: e.status === 'Tilgjengelig' ? 'rgba(45,107,78,0.08)' : 'rgba(220,38,38,0.06)',
                               color: e.status === 'Tilgjengelig' ? 'var(--forest)' : 'var(--danger)',
                             }}>
-                            {e.status === 'Tilgjengelig' ? (e.filial === 'Digitalt' ? 'Lån nå' : `${e.antall} ledig`) : 'Utlånt'}
+                            {e.status === 'Tilgjengelig' ? (e.filial.startsWith('Digitalt') ? 'Lån nå' : `${e.antall} ledig`) : 'Utlånt'}
                           </span>
-                          {e.filial === 'Digitalt' && e.status === 'Tilgjengelig' && (
+                          {e.filial.startsWith('Digitalt') && e.status === 'Tilgjengelig' && (
                             <Link href="/digitalt" className="text-xs font-medium px-3 py-1 rounded-full text-white"
                               style={{ background: 'var(--fjord)' }}
                               onClick={ev => ev.stopPropagation()}>
@@ -478,7 +487,6 @@ export default function KatalogPage() {
                     )}
                   </div>
                 ) : (
-                  /* Fallback: bruk gammel tilgjengelighet-visning */
                   <div className="space-y-2">
                     {detailBook.tilgjengelighet?.map(t => (
                       <div key={t.filial} className="flex items-center justify-between p-3 rounded-xl" style={{ background: 'var(--mist)' }}>
@@ -499,9 +507,9 @@ export default function KatalogPage() {
                 )}
               </div>
 
-              {/* Action buttons */}
+              {/* Action buttons — FIX: passes language/format selection to ReserverModal */}
               <div className="flex gap-3 pt-4" style={{ borderTop: '1px solid rgba(0,0,0,0.06)' }}>
-                <button onClick={() => { setShowDetailModal(false); handleReserver(detailBook) }}
+                <button onClick={handleReserverFromDetail}
                   className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:scale-[1.02]"
                   style={{ background: 'linear-gradient(135deg, var(--ocean), var(--fjord))' }}>
                   {getTotalTilgjengelig(detailBook) > 0 ? 'Bestill' : 'Sett i kø'}
@@ -518,8 +526,19 @@ export default function KatalogPage() {
         </div>
       )}
 
+      {/* FIX: ReserverModal now receives language/format + full book metadata */}
       {selectedBook && <ReserverModal isOpen={showReserverModal} onClose={() => setShowReserverModal(false)}
-        bok={{ id: selectedBook.id, tittel: selectedBook.tittel, forfatter: selectedBook.forfatter, isbn: selectedBook.isbn || '', coverUrl: selectedBook.bildeUrl || undefined }}
+        bok={{
+          id: selectedBook.id,
+          tittel: selectedBook.tittel,
+          forfatter: selectedBook.forfatter,
+          isbn: selectedBook.isbn || '',
+          coverUrl: selectedBook.bildeUrl || undefined,
+          språk: selectedBook.språk,
+          formater: selectedBook.formater,
+        }}
+        valgtSpråk={detailSpråk}
+        valgtFormat={detailFormat}
         onSuccess={handleReservasjonSuccess} />}
     </div>
   )

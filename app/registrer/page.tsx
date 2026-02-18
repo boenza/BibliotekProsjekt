@@ -144,7 +144,7 @@ export default function RegistrerPage() {
                 {icons.user}
               </div>
               <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
-                Bli medlem i dag
+                Bli låner i dag
               </h1>
               <p className="mt-3 text-sm max-w-md mx-auto" style={{ color: 'rgba(212,228,237,0.6)' }}>
                 Få gratis tilgang til tusenvis av bøker, e-bøker, lydbøker, filmer og arrangementer

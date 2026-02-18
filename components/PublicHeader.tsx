@@ -21,12 +21,16 @@ const NAV_ITEMS = [
   { href: '/aktuelt', label: 'Aktuelt', icon: (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8m8-4h-8m8 8h-8"/></svg>
   )},
+  { href: '/apningstider', label: 'Åpningstider', icon: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+  )},
 ]
 
 export default function PublicHeader() {
   const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [logoError, setLogoError] = useState(false)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
@@ -53,32 +57,26 @@ export default function PublicHeader() {
       >
         <div className="container-custom">
           <div className="flex items-center justify-between gap-4 py-3">
-            {/* Logo */}
+            {/* Logo — Bergen Offentlige Bibliotek SVG */}
             <Link href="/" className="flex items-center gap-3 flex-shrink-0 group">
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-105"
-                style={{
-                  background: 'linear-gradient(135deg, #1a7a9e 0%, #d4e4ed 100%)',
-                }}
-              >
-                <span
-                  className="text-sm font-bold"
-                  style={{ color: '#0f3d54', fontFamily: 'var(--font-display)' }}
+              {!logoError ? (
+                <img
+                  src="/bergen-logo.svg"
+                  alt="Bergen Offentlige Bibliotek"
+                  className="h-10 w-auto transition-transform duration-300 group-hover:scale-105"
+                  style={{ filter: 'brightness(0) invert(1)' }}
+                  onError={() => setLogoError(true)}
+                />
+              ) : (
+                /* Fallback if logo file not found */
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-105"
+                  style={{ background: 'linear-gradient(135deg, #1a7a9e 0%, #d4e4ed 100%)' }}
                 >
-                  BB
-                </span>
-              </div>
-              <div>
-                <h1
-                  className="text-lg font-semibold text-white leading-tight tracking-tight"
-                  style={{ fontFamily: 'var(--font-display)' }}
-                >
-                  Bergen Bibliotek
-                </h1>
-                <p className="text-[11px] text-white/50 tracking-wider uppercase">
-                  Offentlige bibliotek
-                </p>
-              </div>
+                  <span className="text-sm font-bold" style={{ color: '#0f3d54', fontFamily: 'var(--font-display)' }}>BB</span>
+                </div>
+              )}
+              
             </Link>
 
             {/* Search — center */}

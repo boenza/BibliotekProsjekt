@@ -24,42 +24,42 @@ export default function QRLånekort({ userNumber, userName }: QRLånekortProps) 
   }, [userNumber])
 
   return (
-    <div className="bg-gradient-to-br from-[#16425b] to-[#0e2f42] rounded-2xl p-8 text-white relative overflow-hidden">
+    <div className="bg-gradient-to-br from-[#16425b] to-[#0e2f42] rounded-2xl p-6 sm:p-8 text-white relative overflow-hidden">
       <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
 
-      <div className="relative flex items-center gap-8">
-        <div className="flex-1">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="text-white/80">{qrIcons.card}</span>
-            <h3 className="text-xl font-bold">Digitalt lånekort</h3>
-          </div>
-
-          <p className="text-white/70 text-sm mb-4">
-            Vis QR-koden i biblioteket for å låne og hente
-          </p>
-
-          <div className="space-y-2">
-            <div className="text-white/90">
-              <div className="text-xs uppercase tracking-wider text-white/60 mb-1">Kortnummer</div>
-              <div className="text-2xl font-light tracking-[0.2em] font-mono">{userNumber}</div>
-            </div>
-            <div className="text-white/90">
-              <div className="text-xs uppercase tracking-wider text-white/60 mb-1">Navn</div>
-              <div className="text-lg font-medium">{userName}</div>
-            </div>
-          </div>
+      <div className="relative flex flex-col items-center text-center">
+        {/* ── Title + description ABOVE QR ── */}
+        <div className="flex items-center gap-3 mb-1">
+          <span className="text-white/80">{qrIcons.card}</span>
+          <h3 className="text-xl font-bold">Digitalt lånekort</h3>
         </div>
+        <p className="text-white/70 text-sm mb-5">
+          Vis QR-koden i biblioteket for å låne
+        </p>
 
-        <div className="bg-white rounded-2xl p-4 shadow-2xl">
-          <div className="w-36 h-36 grid grid-cols-8 gap-0.5">
+        {/* ── QR Code centered ── */}
+        <div className="bg-white rounded-2xl p-4 shadow-2xl mb-5">
+          <div className="w-40 h-40 grid grid-cols-8 gap-0.5">
             {qrPattern.map((pixel, i) => (
               <div key={i} className={`rounded-sm ${pixel ? 'bg-gray-900' : 'bg-transparent'}`} />
             ))}
           </div>
         </div>
+
+        {/* ── Card details BELOW QR ── */}
+        <div className="space-y-2 w-full">
+          <div className="text-white/90">
+            <div className="text-xs uppercase tracking-wider text-white/60 mb-0.5">Kortnummer</div>
+            <div className="text-2xl font-light tracking-[0.2em] font-mono">{userNumber}</div>
+          </div>
+          <div className="text-white/90">
+            <div className="text-xs uppercase tracking-wider text-white/60 mb-0.5">Navn</div>
+            <div className="text-lg font-medium">{userName}</div>
+          </div>
+        </div>
       </div>
 
-      <div className="mt-6 flex items-center gap-2 text-xs text-white/60">
+      <div className="mt-5 flex items-center justify-center gap-2 text-xs text-white/60">
         <span className="text-white/50">{qrIcons.shield}</span>
         <span>Sikker identifikasjon via Bergen Bibliotek</span>
       </div>

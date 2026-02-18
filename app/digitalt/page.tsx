@@ -32,17 +32,13 @@ const icons = {
 /* ───── Digital services data ───── */
 const TJENESTER = [
   { id: 'biblio', navn: 'Biblio', beskrivelse: 'E-bøker og lydbøker — lån direkte til enheten din', url: 'https://www.biblio.no',
-    icon: icons.book, color: 'var(--ocean)', features: ['Ubegrenset utlån', 'Les offline', 'Norsk og internasjonalt', 'Automatisk retur'] },
+    icon: icons.book, logoUrl: '/logos/biblio.jpg', color: 'var(--ocean)', features: ['Ubegrenset utlån', 'Les offline', 'Norsk og internasjonalt', 'Automatisk retur'] },
   { id: 'filmoteket', navn: 'Filmoteket', beskrivelse: 'Norsk og internasjonal film i HD-kvalitet', url: 'https://www.filmoteket.no',
-    icon: icons.film, color: 'var(--fjord)', features: ['HD streaming', 'Norsk film og serier', 'Dokumentarer', 'Ingen ekstra kostnad'] },
+    icon: icons.film, logoUrl: '/logos/filmoteket.jpg', color: 'var(--fjord)', features: ['HD streaming', 'Norsk film og serier', 'Dokumentarer', 'Ingen ekstra kostnad'] },
   { id: 'pressreader', navn: 'PressReader', beskrivelse: 'Tusenvis av aviser og magasiner fra hele verden', url: 'https://www.pressreader.com',
-    icon: icons.newspaper, color: 'var(--terracotta)', features: ['7 000+ publikasjoner', '60+ språk', 'Les på alle enheter', 'Daglig oppdatert'] },
-  { id: 'bookbites', navn: 'BookBites', beskrivelse: 'Lydbøker spesielt tilpasset barn og unge', url: 'https://www.bookbites.no',
-    icon: icons.baby, color: 'var(--forest)', features: ['Norske lydbøker', 'Alderstilpasset', 'Trygt for barn', 'Nye titler hver uke'] },
-  { id: 'ereolen', navn: 'eReolen', beskrivelse: 'Stort utvalg danske e-bøker og lydbøker', url: 'https://ereolen.dk',
-    icon: icons.ebook, color: '#b07a24', features: ['Dansk litteratur', 'E-bøker og lydbøker', 'Lån opptil 10', 'Kjente forfattere'] },
+    icon: icons.newspaper, logoUrl: '/logos/pressreader.jpg', color: 'var(--terracotta)', features: ['7 000+ publikasjoner', '60+ språk', 'Les på alle enheter', 'Daglig oppdatert'] },
   { id: 'libby', navn: 'Libby / OverDrive', beskrivelse: 'Engelskspråklige e-bøker og lydbøker', url: 'https://www.overdrive.com',
-    icon: icons.globe, color: '#7c5cbf', features: ['Engelsk litteratur', 'Bestselgere', 'Kindle-kompatibel', 'Anbefalt for deg'] },
+    icon: icons.globe, logoUrl: '/logos/libby.jpg', color: '#7c5cbf', features: ['Engelsk litteratur', 'Bestselgere', 'Kindle-kompatibel', 'Anbefalt for deg'] },
 ]
 
 const TABS: { key: TabType; label: string; icon: React.ReactNode }[] = [
@@ -101,7 +97,7 @@ export default function DigitaltInnholdPage() {
           <div className="flex gap-2 mt-6">
             {([
               { key: 'browse' as const, label: 'Utforsk innhold' },
-              { key: 'services' as const, label: 'Tjenesteoversikt' },
+              { key: 'services' as const, label: 'Velg tjeneste' },
             ]).map(v => (
               <button key={v.key} onClick={() => setView(v.key)}
                 className="px-4 py-2 rounded-xl text-sm font-medium transition-all"
@@ -132,7 +128,7 @@ export default function DigitaltInnholdPage() {
             <div className="flex items-center gap-3">
               <Link href="/login" className="px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:scale-[1.02]"
                 style={{ background: 'var(--ocean)' }}>Logg inn</Link>
-              <Link href="/registrer" className="text-xs font-medium" style={{ color: 'var(--ocean)' }}>Bli medlem →</Link>
+              <Link href="/registrer" className="text-xs font-medium" style={{ color: 'var(--ocean)' }}>Bli låner →</Link>
             </div>
           </div>
         ) : (
@@ -153,10 +149,14 @@ export default function DigitaltInnholdPage() {
                 <div className="flex flex-col md:flex-row md:items-center gap-5">
                   {/* Icon + info */}
                   <div className="flex items-center gap-4 flex-1">
-                    <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                      style={{ background: `color-mix(in srgb, ${t.color} 8%, transparent)`, color: t.color }}>
-                      {t.icon}
+                    {t.logoUrl ? (
+                        <img src={t.logoUrl} alt={t.navn} className="w-12 h-12 rounded-xl object-contain flex-shrink-0" />
+                      ) : (
+                        <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                          style={{ background: `color-mix(in srgb, ${t.color} 8%, transparent)`, color: t.color }}>
+                          {t.icon}
                     </div>
+                  )}
                     <div className="flex-1 min-w-0">
                       <h3 className="text-base font-bold group-hover:text-[var(--ocean)] transition-colors"
                         style={{ fontFamily: 'var(--font-display)', color: 'var(--ink)' }}>{t.navn}</h3>

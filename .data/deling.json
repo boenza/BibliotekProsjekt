@@ -1,24 +1,5 @@
 [
   {
-    "id": "delt-1",
-    "kildeId": "bodo-arr-42",
-    "kildeBibliotek": "Bodø bibliotek",
-    "type": "arrangement",
-    "tittel": "Nordnorsk forfatterfestival — gjestende foredragsholder",
-    "data": {
-      "beskrivelse": "Foredrag om nordnorsk litteratur med paneldebatt. Kan tilpasses lokale forhold.",
-      "dato": "2026-04-10",
-      "klokkeslett": "18:00",
-      "sted": "",
-      "kategori": "Foredrag",
-      "bildeUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200"
-    },
-    "status": "importert",
-    "opprettetSomId": "arr-1770820646111",
-    "mottatt": "2026-02-08T10:30:00Z",
-    "behandlet": "2026-02-11T14:37:26.129Z"
-  },
-  {
     "id": "delt-2",
     "kildeId": "stavanger-anb-7",
     "kildeBibliotek": "Stavanger bibliotek",

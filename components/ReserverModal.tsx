@@ -1,26 +1,42 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 
 interface ReserverModalProps {
   isOpen: boolean
   onClose: () => void
-  bok: { id: string; tittel: string; forfatter: string; isbn: string; coverUrl?: string }
+  bok: { id: string; tittel: string; forfatter: string; isbn: string; coverUrl?: string; språk?: string[]; formater?: string[] }
   onSuccess: () => void
+  /** Pre-selected language from detail modal */
+  valgtSpråk?: string
+  /** Pre-selected format from detail modal */
+  valgtFormat?: string | null
 }
 
 const rmIcons = {
   info: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>,
 }
 
-export default function ReserverModal({ isOpen, onClose, bok, onSuccess }: ReserverModalProps) {
+export default function ReserverModal({ isOpen, onClose, bok, onSuccess, valgtSpråk, valgtFormat }: ReserverModalProps) {
   const { data: session } = useSession()
   const router = useRouter()
   const [filial, setFilial] = useState('Bergen hovedbibliotek')
+  const [språk, setSpråk] = useState(valgtSpråk || '')
+  const [format, setFormat] = useState(valgtFormat || '')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
+
+  // Sync pre-selected values when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      if (valgtSpråk) setSpråk(valgtSpråk)
+      if (valgtFormat) setFormat(valgtFormat)
+      // Default to first language if not pre-selected
+      if (!valgtSpråk && bok.språk && bok.språk.length > 0) setSpråk(bok.språk[0])
+    }
+  }, [isOpen, valgtSpråk, valgtFormat, bok.språk])
 
   if (!isOpen) return null
 
@@ -37,7 +53,7 @@ export default function ReserverModal({ isOpen, onClose, bok, onSuccess }: Reser
     try {
       const response = await fetch('/api/reservasjoner', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bokId: bok.id, filial })
+        body: JSON.stringify({ bokId: bok.id, filial, språk: språk || undefined, format: format || undefined })
       })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'Kunne ikke reservere')
@@ -46,9 +62,12 @@ export default function ReserverModal({ isOpen, onClose, bok, onSuccess }: Reser
     finally { setIsSubmitting(false) }
   }
 
+  const harFlereSpråk = bok.språk && bok.språk.length > 1
+  const harFlereFormater = bok.formater && bok.formater.length > 1
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-xl max-w-lg w-full">
+      <div className="bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex items-start justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900">Reserver bok</h2>
@@ -67,6 +86,46 @@ export default function ReserverModal({ isOpen, onClose, bok, onSuccess }: Reser
           {error && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>}
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Språk-velger */}
+            {harFlereSpråk && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Språk</label>
+                <div className="flex flex-wrap gap-2">
+                  {bok.språk!.map(s => (
+                    <button key={s} type="button" onClick={() => setSpråk(s)}
+                      className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all"
+                      style={{
+                        background: språk === s ? '#16425b' : '#f3f4f6',
+                        color: språk === s ? '#fff' : '#4b5563',
+                        border: språk === s ? '1.5px solid #16425b' : '1.5px solid #e5e7eb',
+                      }}>
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Format-velger */}
+            {harFlereFormater && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Format</label>
+                <div className="flex flex-wrap gap-2">
+                  {bok.formater!.map(f => (
+                    <button key={f} type="button" onClick={() => setFormat(f)}
+                      className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all"
+                      style={{
+                        background: format === f ? '#16425b' : '#f3f4f6',
+                        color: format === f ? '#fff' : '#4b5563',
+                        border: format === f ? '1.5px solid #16425b' : '1.5px solid #e5e7eb',
+                      }}>
+                      {f}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Hent ved filial *</label>
               <select value={filial} onChange={(e) => setFilial(e.target.value)}
