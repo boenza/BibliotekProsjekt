@@ -1,18 +1,20 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // ✅ Turbopack config - tom for å bruke standard innstillinger
+  turbopack: {},
+  
+  // ✅ Bildeoptimalisering
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'cdn.sanity.io' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
     ],
   },
-  webpack: (config, { dev }) => {
-    if (dev) {
-      config.cache = false
-    }
-    return config
-  },
-  // Service worker må serveres uten caching
+  
+  // ⚠️ FJERNET webpack config - ikke nødvendig med Turbopack
+  // Turbopack håndterer caching automatisk og mer effektivt
+  
+  // ✅ Service worker headers
   async headers() {
     return [
       {

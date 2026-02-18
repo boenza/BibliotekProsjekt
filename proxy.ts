@@ -8,8 +8,8 @@ const TENANTS: Record<string, string> = {
   'localhost:3000': 'bergen', // Default for development
 }
 
-export function middleware(request: NextRequest) {
-  const hostname = request.headers.get('host') || 'localhost:3000'
+export function proxy(request: NextRequest) {
+  const hostname = request.headers.get('host') || 'localhost:3002'
   const tenantId = TENANTS[hostname] || 'bergen'
 
   // Add tenant to response headers

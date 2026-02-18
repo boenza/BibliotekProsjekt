@@ -28,7 +28,7 @@ const ic = {
   loader: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>,
 }
 
-const TYPE_INFO: Record<string, { ikon: JSX.Element; label: string; farge: string; seksjon: string; url: string }> = {
+const TYPE_INFO: Record<string, { ikon: React.ReactNode; label: string; farge: string; seksjon: string; url: string }> = {
   arrangement: { ikon: ic.calendar, label: 'Arrangement', farge: 'bg-blue-100 text-blue-800', seksjon: 'Arrangementer', url: '/admin/arrangementer' },
   anbefaling: { ikon: ic.star, label: 'Anbefaling', farge: 'bg-purple-100 text-purple-800', seksjon: 'Anbefalinger', url: '/admin/innhold/anbefalinger' },
   artikkel: { ikon: ic.fileText, label: 'Artikkel', farge: 'bg-teal-100 text-teal-800', seksjon: 'Artikler', url: '/admin/innhold/artikler' },

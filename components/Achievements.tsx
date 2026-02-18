@@ -6,7 +6,7 @@ interface Achievement {
   id: number
   name: string
   desc: string
-  icon: JSX.Element
+  icon: React.ReactNode
   unlocked: boolean
 }
 

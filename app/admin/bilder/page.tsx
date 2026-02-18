@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import React from 'react'
 
 interface Bilde {
   id: string
@@ -25,7 +26,7 @@ const ic = {
   trash: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>,
 }
 
-const KILDE_INFO: Record<string, { label: string; ikon: JSX.Element; farge: string }> = {
+const KILDE_INFO: Record<string, { label: string; ikon: React.ReactNode; farge: string }> = {
   katalog: { label: 'Katalog', ikon: ic.book, farge: 'bg-blue-100 text-blue-800' },
   anbefaling: { label: 'Anbefaling', ikon: ic.star, farge: 'bg-purple-100 text-purple-800' },
   arrangement: { label: 'Arrangement', ikon: ic.calendar, farge: 'bg-green-100 text-green-800' },

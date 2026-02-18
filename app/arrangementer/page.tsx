@@ -16,7 +16,7 @@ interface Arrangement {
 function getKapasitet(e: Arrangement): number { return e.kapasitet ?? e.maxDeltakere ?? 50 }
 function getPåmeldte(e: Arrangement): number { return e.påmeldte ?? e.antallPaameldt ?? 0 }
 
-const KAT_IKON: Record<string, JSX.Element> = {
+const KAT_IKON: Record<string, React.ReactNode> = {
   'Forfatterbesøk': <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>,
   'Barneaktivitet': <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/></svg>,
   'Verksted': <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m15 12-8.5 8.5c-.83.83-2.17.83-3 0a2.12 2.12 0 0 1 0-3L12 9"/><path d="m20.91 11.7-1.25-1.25c-.6-.6-.93-1.4-.93-2.25v-.86L16.01 4.6a5.56 5.56 0 0 0-3.94-1.64H9"/></svg>,

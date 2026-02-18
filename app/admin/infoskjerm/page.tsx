@@ -175,7 +175,7 @@ function SlideRenderer({ slide }: { slide: Slide }) {
 // ADMIN-SIDE
 // ═══════════════════════════════════════════════════════
 
-const TYPE_LABELS: Record<string, { ikon: JSX.Element; label: string; farge: string }> = {
+const TYPE_LABELS: Record<string, { ikon: React.ReactNode; label: string; farge: string }> = {
   arrangement: { ikon: ic.calendar, label: 'Plakat', farge: 'bg-blue-100 text-blue-800' },
   anbefaling: { ikon: ic.star, label: 'Anbefaling', farge: 'bg-amber-100 text-amber-800' },
   melding: { ikon: ic.megaphone, label: 'Melding', farge: 'bg-teal-100 text-teal-800' },

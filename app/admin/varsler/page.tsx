@@ -24,7 +24,7 @@ const ic = {
 }
 
 /** Maps varsel type to its SVG icon */
-const TYPE_ICON: Record<string, JSX.Element> = {
+const TYPE_ICON: Record<string, React.ReactNode> = {
   info: ic.info,
   advarsel: ic.warning,
   viktig: ic.alert,
